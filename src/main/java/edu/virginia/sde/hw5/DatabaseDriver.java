@@ -86,7 +86,7 @@ public class DatabaseDriver {
 
         String Routes =
                 "CREATE TABLE Routes (" +
-                        "ID INTEGER NOT NULL PRIMARY KEY, " +
+                        "ID INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
                         "BusLineID INTEGER NOT NULL, " +
                         "StopID INTEGER NOT NULL, " +
                         "RouteOrder INTEGER NOT NULL, " +
@@ -261,36 +261,34 @@ public class DatabaseDriver {
         }
         //TODO: implement
 
-        String insertBusLineSQL = "INSERT INTO BusLines (ID, IsActive, LongName, ShortName) VALUES (?, ?, ?, ?);";
-        String insertRouteSQL = "INSERT INTO Routes (BusLineID, StopID, RouteOrder) VALUES (?, ?, ?);";
+        String insertBusLine = "INSERT INTO BusLines (ID, IsActive, LongName, ShortName) VALUES (?, ?, ?, ?);";
+        String insertRoute = "INSERT INTO Routes (BusLineID, StopID, RouteOrder) VALUES (?, ?, ?);";
 
-//        try {
-//            connection.setAutoCommit(false);
-//
-//            try (PreparedStatement pstmtBusLine = connection.prepareStatement(insertBusLineSQL)) {
-//                for (BusLine busLine : busLines) {
-//                    pstmtBusLine.setInt(1, busLine.getId());
-//                    pstmtBusLine.setBoolean(2, busLine.isActive());
-//                    pstmtBusLine.setString(3, busLine.getLongName());
-//                    pstmtBusLine.setString(4, busLine.getShortName());
-//                    pstmtBusLine.executeUpdate();
-//
-//                    try (PreparedStatement pstmtRoute = connection.prepareStatement(insertRouteSQL)) {
-//                        for (Route route : busLine.getRoute()) {
-//                            for (Stop stop : route.getStops()) {
-//                                pstmtRoute.setInt(1, busLine.getId());
-//                                pstmtRoute.setInt(2, stop.getId());
-//                                pstmtRoute.setInt(3, route.getStops().indexOf(stop)); // Assuming the order is the list index
-//                                pstmtRoute.executeUpdate();
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (SQLException e) {
-//            connection.rollback();
-//            throw e;
-//        }
+        try (PreparedStatement pstmtBusLine = connection.prepareStatement(insertBusLine);
+             PreparedStatement pstmtRoute = connection.prepareStatement(insertRoute)) {
+
+            for (BusLine busLine : busLines) {
+                pstmtBusLine.setInt(1, busLine.getId());
+                pstmtBusLine.setBoolean(2, busLine.isActive());
+                pstmtBusLine.setString(3, busLine.getLongName());
+                pstmtBusLine.setString(4, busLine.getShortName());
+                pstmtBusLine.executeUpdate();
+
+                Route routes = busLine.getRoute();
+                for (Stop route : routes) {
+                    for (int i = 0; i < routes.size(); i++) {
+//                        pstmtRoute.setInt(1, routeId);
+                        pstmtRoute.setInt(2, busLine.getId());
+                        pstmtRoute.setInt(3, route.getId());
+                        pstmtRoute.setInt(4, i);
+                        pstmtRoute.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        }
 //        try {
             //Your JDBC code codes here
 //        } catch (SQLException e) {
@@ -328,7 +326,6 @@ public class DatabaseDriver {
         }
         return collection;
 
-        //throw exceptions
         //TODO: implement
     }
 
