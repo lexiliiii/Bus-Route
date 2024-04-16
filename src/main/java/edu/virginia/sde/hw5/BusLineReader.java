@@ -34,15 +34,10 @@ public class BusLineReader {
      * This method returns the BusLines from the API service, including their
      * complete Routes.
      */
-    public List<BusLine> getBusLines() {
-
+    public List<BusLine> getBusLines() {//TODO: implement
         List<BusLine> collection = new ArrayList<>();
         List<Stop> allStops = stopReader.getStops();
-//        System.out.println(allStops);
-//        for(Stop s: allStops){
-//            System.out.println(s.getId());
-//        }
-        //TODO: implement
+
         try(var inputStream = busLinesApiUrl.openStream();
             var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             var bufferedReader = new BufferedReader(inputStreamReader)) {
@@ -57,42 +52,43 @@ public class BusLineReader {
                     JSONArray buslines = json.getJSONArray("lines");
                     JSONObject json_route = new JSONObject(new JSONTokener(fileContents1));
                     JSONArray routes = json_route.getJSONArray("routes");
+
                     for (int i = 0; i < buslines.length(); i++) {
                         JSONObject eachStop = buslines.getJSONObject(i);
-                        int id = eachStop.getInt("id");
+                        int id_buslines = eachStop.getInt("id");
                         boolean isActive = eachStop.getBoolean("is_active");
                         String longName = eachStop.getString("long_name");
                         String shortName = eachStop.getString("short_name");
 
                         JSONObject eachRoute = routes.getJSONObject(i);
                         JSONArray stopList = eachRoute.getJSONArray("stops");
+                        int id_route = eachRoute.getInt("id");
 //                        System.out.println(stopList);
 //                        System.out.println(allStops);
-//
-                        Route tempRoute = new Route();
 
-                        for(int j = 0; j < stopList.length(); j ++){
-                            int temp_id = stopList.getInt(j);
-                            for(Stop s: allStops){
-                                if(s.getId() == temp_id){
-                                    tempRoute.add(s);
+                        if(id_route == id_buslines){
+                            Route tempRoute = new Route();
+
+                            for(int j = 0; j < stopList.length(); j ++){
+                                int temp_id = stopList.getInt(j);
+                                for(Stop s: allStops){
+                                    if(s.getId() == temp_id){
+                                        tempRoute.add(s);
+                                    }
                                 }
-                            }
 //                            allStops.contains(temp_id)
 //                            System.out.println(temp_id);
-                        }
+                            }
 //                        System.out.println(tempRoute);
 
-                    collection.add(new BusLine(id, isActive, longName, shortName, tempRoute));
-            }
+                            collection.add(new BusLine(id_buslines, isActive, longName, shortName, tempRoute));
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
         }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
         return collection;
-        //TODO: implement
     }
 
 //    public static void main(String[] args){
@@ -104,7 +100,7 @@ public class BusLineReader {
 //            BusLineReader bus = new BusLineReader(con);
 //
 //            List<BusLine> xx = bus.getBusLines();
-////            System.out.println(xx);
+//            System.out.println(xx);
 ////            System.out.println(stop);
 ////            List<Stop> temp = stop.getStops();
 ////            System.out.println(temp.size());
