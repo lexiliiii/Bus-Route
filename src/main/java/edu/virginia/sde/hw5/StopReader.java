@@ -55,16 +55,14 @@ public class StopReader {
     }
 
 
-//        public static void main(String[] args){
-////        Configuration con = new Configuration();
-////        con.parseJsonConfigFile();
-//        try {
-//            Configuration con = new Configuration();
-//            StopReader stop = new StopReader(con);
-//            List<Stop> temp = stop.getStops();
-//            System.out.println(temp);
-//        } catch (Exception e) {
-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
-//        }
-//    }
+    public static void main(String[] args){
+        try {
+            Configuration con = new Configuration();
+            StopReader stop = new StopReader(con);
+            List<Stop> temp = stop.getStops();
+            System.out.println(temp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
