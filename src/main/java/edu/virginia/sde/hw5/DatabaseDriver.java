@@ -12,7 +12,7 @@ import java.sql.*;
 public class DatabaseDriver {
     private final String sqliteFilename;
     private Connection connection;
-//TODO: DO NOT CALL COMMIT IN ANY METHODS
+    //TODO: DO NOT CALL COMMIT IN ANY METHODS
     public DatabaseDriver(Configuration configuration) {
         this.sqliteFilename = configuration.getDatabaseFilename();
     }
@@ -65,35 +65,34 @@ public class DatabaseDriver {
      * @throws SQLException
      */
     public void createTables() throws SQLException {
-        //TODO: implement
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
         String Stops =
-                "CREATE TABLE Stops (" +
+                "CREATE TABLE IF NOT EXISTS Stops (" +
                         "ID INTEGER NOT NULL PRIMARY KEY, " +
                         "StopName TEXT NOT NULL, " +
                         "Latitude REAL NOT NULL, " +
                         "Longitude REAL NOT NULL);";
 
         String BusLines =
-                "CREATE TABLE BusLines (" +
+                "CREATE TABLE IF NOT EXISTS BusLines (" +
                         "ID INTEGER NOT NULL PRIMARY KEY, " +
                         "IsActive BOOLEAN NOT NULL, " +
                         "LongName TEXT NOT NULL, " +
                         "ShortName TEXT NOT NULL);";
 
         String Routes =
-                "CREATE TABLE Routes (" +
-                        "ID INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
+                "CREATE TABLE IF NOT EXISTS Routes (" +
+                        "ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                         "BusLineID INTEGER NOT NULL, " +
                         "StopID INTEGER NOT NULL, " +
                         "RouteOrder INTEGER NOT NULL, " +
                         "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
                         "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE);";
 
-//        Statement statement = connection.createStatement();
+        // Using try-with-resources to ensure the statement is closed after execution
         try (Statement statement = connection.createStatement()) {
             statement.execute(Stops);
             statement.execute(BusLines);
@@ -114,7 +113,7 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String insertStops = "INSERT INTO Stops (ID, StopName, Latitude, Longitude VALUES (?, ?, ?, ?);";
+        String insertStops = "INSERT INTO Stops (ID, StopName, Latitude, Longitude) VALUES (?, ?, ?, ?);";
 
         try (PreparedStatement pstmt = connection.prepareStatement(insertStops)) {
             for (Stop stop : stops) {
@@ -255,16 +254,17 @@ public class DatabaseDriver {
      * in the database. If any SQLExceptions occur, this method will rollback all changes since
      * the method was called. This could happen if, for example, a BusLine contains a Stop that is not in the database.
      */
+
     public void addBusLines(List<BusLine> busLines) throws SQLException {
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
-        //TODO: implement
 
         String insertBusLine = "INSERT INTO BusLines (ID, IsActive, LongName, ShortName) VALUES (?, ?, ?, ?);";
+
         String insertRoute = "INSERT INTO Routes (BusLineID, StopID, RouteOrder) VALUES (?, ?, ?);";
 
-        try (PreparedStatement pstmtBusLine = connection.prepareStatement(insertBusLine);
+        try (PreparedStatement pstmtBusLine = connection.prepareStatement(insertBusLine, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement pstmtRoute = connection.prepareStatement(insertRoute)) {
 
             for (BusLine busLine : busLines) {
@@ -275,28 +275,20 @@ public class DatabaseDriver {
                 pstmtBusLine.executeUpdate();
 
                 Route routes = busLine.getRoute();
-                for (Stop route : routes) {
-                    for (int i = 0; i < routes.size(); i++) {
-//                        pstmtRoute.setInt(1, routeId);
-                        pstmtRoute.setInt(2, busLine.getId());
-                        pstmtRoute.setInt(3, route.getId());
-                        pstmtRoute.setInt(4, i);
-                        pstmtRoute.executeUpdate();
-                    }
+                for (int i = 0; i < routes.size(); i++) {
+                    Stop route = routes.get(i);
+                    pstmtRoute.setInt(1, busLine.getId());
+                    pstmtRoute.setInt(2, route.getId());
+                    pstmtRoute.setInt(3, i);
+                    pstmtRoute.executeUpdate();
                 }
             }
         } catch (SQLException e) {
             connection.rollback();
             throw e;
         }
-//        try {
-            //Your JDBC code codes here
-//        } catch (SQLException e) {
-//            rollback(); //rolls back any changes before the Exception was thrown
-//            throw e; //still throws the SQLException
-//        }
-
     }
+
 
     /**
      * Return a list of all BusLines
