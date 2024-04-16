@@ -54,6 +54,7 @@ public class StopReader {
         return collection;
     }
 
+
 //        public static void main(String[] args){
 ////        Configuration con = new Configuration();
 ////        con.parseJsonConfigFile();
