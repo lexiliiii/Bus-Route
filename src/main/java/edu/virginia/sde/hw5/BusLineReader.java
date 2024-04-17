@@ -60,28 +60,31 @@ public class BusLineReader {
                         String longName = eachStop.getString("long_name");
                         String shortName = eachStop.getString("short_name");
 
-                        JSONObject eachRoute = routes.getJSONObject(i);
-                        JSONArray stopList = eachRoute.getJSONArray("stops");
-                        int id_route = eachRoute.getInt("id");
+                        for(int a = 0; a < routes.length(); a ++){
+                            JSONObject eachRoute = routes.getJSONObject(a);
+                            JSONArray stopList = eachRoute.getJSONArray("stops");
+                            int id_route = eachRoute.getInt("id");
 //                        System.out.println(stopList);
 //                        System.out.println(allStops);
 
-                        if(id_route == id_buslines){
-                            Route tempRoute = new Route();
+                            if(id_route == id_buslines){
+                                Route tempRoute = new Route();
 
-                            for(int j = 0; j < stopList.length(); j ++){
-                                int temp_id = stopList.getInt(j);
-                                for(Stop s: allStops){
-                                    if(s.getId() == temp_id){
-                                        tempRoute.add(s);
+                                for(int j = 0; j < stopList.length(); j ++){
+                                    int temp_id = stopList.getInt(j);
+                                    for(Stop s: allStops){
+                                        if(s.getId() == temp_id){
+                                            tempRoute.add(s);
+                                        }
                                     }
-                                }
 //                            allStops.contains(temp_id)
 //                            System.out.println(temp_id);
-                            }
+                                }
 //                        System.out.println(tempRoute);
 
-                            collection.add(new BusLine(id_buslines, isActive, longName, shortName, tempRoute));
+                                collection.add(new BusLine(id_buslines, isActive, longName, shortName, tempRoute));
+                            }
+
                         }
                     }
                 }
