@@ -100,8 +100,8 @@ public class BusLineService {
             throw new IllegalArgumentException("Source or destination stop doesn't exist in the database");
         }
 
-        double max = 0;
-        BusLine maxBus = new BusLine();
+        double min = 1000000.0;
+        BusLine minBus = new BusLine();
         List<BusLine> busLineList = getBusLines();
 
         for(BusLine b : busLineList){
@@ -125,9 +125,9 @@ public class BusLineService {
                     for(int j = start; j < end -1; j ++){
                         distance += tempRoute.get(j).distanceTo(tempRoute.get(j+1));
                     }
-                    if(distance > max){
-                        max = distance;
-                        maxBus = b;
+                    if(distance < min){
+                        min = distance;
+                        minBus = b;
                     }
                 }
 
@@ -135,18 +135,18 @@ public class BusLineService {
                     for(int a = end; a < start - 1; a ++){
                         distance += tempRoute.get(a).distanceTo(tempRoute.get(a+1));
                     }
-                    if(tempRoute.getRouteDistance() - distance > max){
-                        max = tempRoute.getRouteDistance() - distance;
-                        maxBus = b;
+                    if(tempRoute.getRouteDistance() - distance < min){
+                        min = tempRoute.getRouteDistance() - distance;
+                        minBus = b;
                     }
                 }
             }
         }
 
-        if(maxBus == null){
+        if(minBus == null){
             return Optional.empty();
         }
 
-        return Optional.of(maxBus);
+        return Optional.of(minBus);
     }
 }
