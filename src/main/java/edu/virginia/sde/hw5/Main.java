@@ -14,12 +14,12 @@ public class Main {
         String databaseName = "bus_stops.sqlite";
         DatabaseDriver driver = new DatabaseDriver(databaseName);
 
+//        System.out.println(con.getBusLinesURL());
+
         try {
             driver.connect();
+            driver.clearTables();
 
-            if(driver != null){
-                driver.clearTables();
-            }
 
             driver.createTables();
 
@@ -36,7 +36,7 @@ public class Main {
 //            for(int i = 0; i < busLines.size(); i ++){
 //                routes.add(busLines.get(i).getRoute());
 //            }
-//
+
 //            System.out.println("Number of stops: " + stops.size());
 //            for (Stop stop : stops) {
 //                System.out.println("Processing stop ID: " + stop.getId());
@@ -44,7 +44,7 @@ public class Main {
 //
 //            System.out.println("Number of bus lines: " + busLines.size());
 //            for (BusLine busLine : busLines) {
-//                System.out.println(busLine);
+//                System.out.println("Processing bus line ID: " + busLine.getId());
 //            }
 
             driver.commit();
