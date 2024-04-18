@@ -61,20 +61,6 @@ public class Configuration {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
-//             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//            String jsonString = bufferedReader.lines().collect(Collectors.joining());
-//
-//            JSONObject json = new JSONObject(new JSONTokener(jsonString));
-//
-//            JSONObject endpoints = json.getJSONObject("endpoints");
-//        if (busLinesURL == null) {
-//
-//            busLinesURL = new URL(endpoints.getString("lines"));
-//
-//        }
-//            busStopsURL = new URL(endpoints.getString("stops"));
-//            databaseFilename = json.getString("database");
     }
 
 //    public static void main(String[] args){

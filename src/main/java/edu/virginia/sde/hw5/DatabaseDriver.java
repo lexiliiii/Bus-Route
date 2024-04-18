@@ -214,7 +214,6 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
-
         return collection;
     }
 
@@ -282,11 +281,10 @@ public class DatabaseDriver {
 
 //                System.out.println("Short Name: " + shortName);
 
-
                 BusLine busLine = new BusLine(id, isActive, longName, shortName);
 
-//                Route route = getRouteForBusLine(busLine);
-//                busLine.setRoute(route);
+                Route route = getRouteForBusLine(busLine);
+                busLine.setRoute(route);
 
                 collection.add(busLine);
             }
@@ -338,7 +336,7 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String sql = "SELECT * FROM BusLines WHERE LongName = ?";
+        String sql = "SELECT * FROM BusLines WHERE LOWER(LongName) = LOWER(?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, longName);
@@ -347,8 +345,9 @@ public class DatabaseDriver {
                     int id = rs.getInt("ID");
                     boolean isActive = rs.getBoolean("IsActive");
                     String shortName = rs.getString("ShortName");
+                    String originalLongName = rs.getString("LongName");
 
-                    BusLine busLine = new BusLine(id, isActive, longName, shortName);
+                    BusLine busLine = new BusLine(id, isActive, originalLongName, shortName);
 
                     Route route = getRouteForBusLine(busLine);
                     busLine.setRoute(route);
@@ -371,17 +370,18 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String sql = "SELECT * FROM BusLines WHERE ShortName = ?";
+        String sql = "SELECT * FROM BusLines WHERE LOWER(ShortName) = LOWER(?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, shortName);
+            statement.setString(1, shortName.toUpperCase());
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs != null) {
                     int id = rs.getInt("ID");
                     boolean isActive = rs.getBoolean("IsActive");
                     String longName = rs.getString("LongName");
+                    String originalShortName = rs.getString("ShortName");
 
-                    BusLine busLine = new BusLine(id, isActive, longName, shortName);
+                    BusLine busLine = new BusLine(id, isActive, longName, originalShortName);
 
                     Route route = getRouteForBusLine(busLine);
                     busLine.setRoute(route);
@@ -394,9 +394,6 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
-
-        //TODO: implement
-//        return Optional.empty();
     }
 
     /**
@@ -424,12 +421,17 @@ public class DatabaseDriver {
                     boolean isActive = rs.getBoolean("IsActive");
                     String longName = rs.getString("LongName");
                     String shortName = rs.getString("ShortName");
-                    collection.add(new BusLine(id, isActive, longName, shortName));
+
+                    BusLine busLine = new BusLine(id, isActive, longName, shortName);
+
+
+                    Route route = getRouteForBusLine(busLine);
+                    busLine.setRoute(route);
+
+                    collection.add(busLine);
                 }
             }
-        }
-
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new SQLException("Error get bus lines by stop: " + e.getMessage());
         }
         return collection;
@@ -441,14 +443,10 @@ public class DatabaseDriver {
      * @throws SQLException
      * @throws java.util.NoSuchElementException if busLine is not in the database
      */
-    public Route getRouteForBusLine(BusLine busLine) throws SQLException {////
+
+    public Route getRouteForBusLine(BusLine busLine) throws SQLException {
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
-        }
-
-        List<BusLine> allBuslines = getBusLines();
-        if(!allBuslines.contains(busLine)){
-            throw new NoSuchElementException("This busline is not in the database");
         }
 
         List<Stop> stops = new ArrayList<>();
@@ -462,6 +460,9 @@ public class DatabaseDriver {
             pstmt.setInt(1, busLine.getId());
 
             try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.isBeforeFirst()) {
+                    throw new NoSuchElementException("This busline is not in the database");
+                }
                 while (rs.next()) {
                     int id = rs.getInt("ID");
                     String name = rs.getString("StopName");
@@ -469,11 +470,10 @@ public class DatabaseDriver {
                     double longitude = rs.getDouble("Longitude");
                     stops.add(new Stop(id, name, latitude, longitude));
                 }
+                return new Route(stops);
             }
-            return new Route(stops);
-        }
-        catch (SQLException e) {
-            throw new SQLException("Error get route for BusLine: " + e.getMessage());
+        } catch (SQLException e) {
+            throw new SQLException("Error getting route for BusLine: " + e.getMessage());
         }
     }
 
