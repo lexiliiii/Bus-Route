@@ -1,0 +1,263 @@
+Index: src/main/java/edu/virginia/sde/hw5/StopReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport java.net.URL;\nimport java.util.List;\n\npublic class StopReader {\n\n    private final URL busStopsApiUrl;\n\n    public StopReader(Configuration configuration) {\n        this.busStopsApiUrl = configuration.getBusStopsURL();\n    }\n\n    /**\n     * Read all the stops from the \"stops\" json URL from Configuration Reader\n     * @return List of stops\n     */\n    public List<Stop> getStops() {\n        //TODO: implement\n        return null;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/StopReader.java b/src/main/java/edu/virginia/sde/hw5/StopReader.java
+--- a/src/main/java/edu/virginia/sde/hw5/StopReader.java	(revision bebd99c1e34278a0bc041ce98e1d73a2e4ceaf41)
++++ b/src/main/java/edu/virginia/sde/hw5/StopReader.java	(date 1713290989186)
+@@ -1,7 +1,20 @@
+ package edu.virginia.sde.hw5;
+ 
++import org.json.JSONObject;
++import org.json.JSONTokener;
++import org.json.JSONArray;
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.InputStreamReader;
+ import java.net.URL;
++import java.nio.charset.StandardCharsets;
++import java.util.ArrayList;
++import java.util.Arrays;
+ import java.util.List;
++import java.util.Objects;
++import java.util.stream.Collectors;
++import java.net.HttpURLConnection;
+ 
+ public class StopReader {
+ 
+@@ -16,7 +29,57 @@
+      * @return List of stops
+      */
+     public List<Stop> getStops() {
++        List<Stop> collection = new ArrayList<>();
+         //TODO: implement
++        try(var inputStream = busStopsApiUrl.openStream();
++            var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
++            var bufferedReader = new BufferedReader(inputStreamReader)) {
++            var fileContents = bufferedReader.lines().collect(Collectors.joining("\n"));
++
++            JSONObject json = new JSONObject(new JSONTokener(fileContents));
++            JSONArray stops = json.getJSONArray("stops");
++//            for(int i = 0; i < stops.length(); i ++){
++//                System.out.println(stops.get(i));
++////                JSONObject eachStop = stops.getJSONObject(i);
++////                int id = eachStop.getInt("id");
++////                String name = eachStop.getString("name");
++////                double position = eachStop.getDouble("position");
++////                System.out.println(name);
++////                System.out.println(position);
++////                collection.add(new Stop(id, name, latitude, longitude));
++//            }
++//            System.out.println(stops.length());
++//            JSONObject stops = json.getJSONObject("location_type");
++//            System.out.println(stops);
++        } catch (IOException e) {
++            throw new RuntimeException(e);
++        }
++
++//        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
++//             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
++//            String jsonString = bufferedReader.lines().collect(Collectors.joining());
++//
++//            JSONObject json = new JSONObject(new JSONTokener(jsonString));
++//
++//            JSONObject endpoints = json.getJSONObject("endpoints");
++//            busStopsURL = new URL(endpoints.getString("stops"));
++
+         return null;
+     }
++
++        public static void main(String[] args){
++//        Configuration con = new Configuration();
++//        con.parseJsonConfigFile();
++        try {
++            Configuration con = new Configuration();
++            StopReader stop = new StopReader(con);
++//            System.out.println(stop);
++            stop.getStops();
++//            System.out.println("Bus Stops URL: " + stop.busStopsApiUrl);
++//            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
++//            System.out.println("Database Filename: " + con.getDatabaseFilename());
++        } catch (Exception e) {
++            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
++        }
++    }
+ }
+Index: .idea/modules.xml
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+deleted file mode 100644
+--- a/.idea/modules.xml	(revision bebd99c1e34278a0bc041ce98e1d73a2e4ceaf41)
++++ /dev/null	(revision bebd99c1e34278a0bc041ce98e1d73a2e4ceaf41)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectModuleManager">
+-    <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hw5-starter-repo.test.iml" filepath="$PROJECT_DIR$/.idea/modules/hw5-starter-repo.test.iml" />
+-    </modules>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: src/main/java/edu/virginia/sde/hw5/BusLineReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport java.net.URL;\nimport java.util.List;\n\npublic class BusLineReader {\n    private final URL busLinesApiUrl;\n    private final URL busStopsApiUrl;\n\n    /* You'll need this to get the Stop objects when building the Routes object */\n    private final StopReader stopReader;\n    /**\n     * Returns a list of BusLine objects. This is a \"deep\" list, meaning all the BusLine objects\n     * already have their Route objects fully populated with that line's Stops.\n     */\n\n    public BusLineReader(Configuration configuration) {\n        this.busStopsApiUrl = configuration.getBusStopsURL();\n        this.busLinesApiUrl = configuration.getBusLinesURL();\n        stopReader = new StopReader(configuration);\n    }\n\n    /**\n     * This method returns the BusLines from the API service, including their\n     * complete Routes.\n     */\n    public List<BusLine> getBusLines() {\n        //TODO: implement\n        return null;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/BusLineReader.java b/src/main/java/edu/virginia/sde/hw5/BusLineReader.java
+--- a/src/main/java/edu/virginia/sde/hw5/BusLineReader.java	(revision bebd99c1e34278a0bc041ce98e1d73a2e4ceaf41)
++++ b/src/main/java/edu/virginia/sde/hw5/BusLineReader.java	(date 1713290996430)
+@@ -1,7 +1,14 @@
+ package edu.virginia.sde.hw5;
+ 
++import org.json.JSONObject;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStreamReader;
+ import java.net.URL;
++import java.nio.charset.StandardCharsets;
+ import java.util.List;
++import java.util.stream.Collectors;
+ 
+ public class BusLineReader {
+     private final URL busLinesApiUrl;
+@@ -25,6 +32,14 @@
+      * complete Routes.
+      */
+     public List<BusLine> getBusLines() {
++//        try(var inputStream = url.openStream();
++//            var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
++//            var bufferedReader = new BufferedReader(inputStreamReader)) {
++//            var fileContents = bufferedReader.lines().collect(Collectors.joining("\n"));
++//            return new JSONObject(fileContents);
++//        } catch (IOException e) {
++//            throw new RuntimeException(e);
++//        }
+         //TODO: implement
+         return null;
+     }
+Index: src/main/java/edu/virginia/sde/hw5/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/Main.java b/src/main/java/edu/virginia/sde/hw5/Main.java
+new file mode 100644
+--- /dev/null	(date 1713290996432)
++++ b/src/main/java/edu/virginia/sde/hw5/Main.java	(date 1713290996432)
+@@ -0,0 +1,107 @@
++package edu.virginia.sde.hw5;
++import javax.print.DocFlavor;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Optional;
++import java.sql.*;
++import java.util.Arrays;
++public class Main {
++    public static void main(String[] args){
++        Configuration con = new Configuration();
++//        String databaseName = "bus_stops.sqlite";
++        DatabaseDriver driver = new DatabaseDriver(con);
++
++        try {
++            driver.connect();
++
++            driver.createTables();
++
++//            List<BusLine> busLines = Arrays.asList(
++//                    new BusLine(1, true, "Long Route", "LR"),
++//                    new BusLine(2, false, "Short Route", "SR")
++//            );
++//
++//            // Add bus lines to the database
++////            driver.addBusLines(busLines);
++//
++//            List<Stop> stops = Arrays.asList(
++//                    new Stop(1, "First Stop", 38.0293, -78.4767),
++//                    new Stop(2, "Second Stop", 38.0294, -78.4768)
++//            );
++//            driver.addStops(stops);
++
++            driver.commit();
++
++        } catch (Exception e) {
++            System.out.println("Error during database operations: " + e.getMessage());
++            try {
++                driver.rollback();
++            } catch (SQLException re) {
++                System.out.println("Error during rollback: " + re.getMessage());
++            }
++        } finally {
++            try {
++                driver.disconnect();
++            } catch (SQLException e) {
++                System.out.println("Error disconnecting from the database: " + e.getMessage());
++            }
++        }
++    }
++}
++
++
++//
++//        try {
++//            driver.connect();
++//
++//            driver.createTables();
++//
++//
++//
++//            List<Stop> stops = Arrays.asList(
++//                    new Stop(1, "First Stop", 38.0293, -78.4767),
++//                    new Stop(2, "Second Stop", 38.0294, -78.4768)
++//            );
++//            driver.addStops(stops);
++//
++//            List<BusLine> busLines = Arrays.asList(
++//                    new BusLine(1, true, "Long Route", "LR"),
++//                    new BusLine(2, false, "Short Route", "SR")
++//            );
++//            driver.addBusLines(busLines);
++//
++//            // Retrieve and display Stops
++//            List<Stop> retrievedStops = driver.getAllStops();
++//            System.out.println("Retrieved Stops:");
++//            retrievedStops.forEach(System.out::println);
++//
++//            // Retrieve and display BusLines
++//            List<BusLine> retrievedBusLines = driver.getBusLines();
++//            System.out.println("Retrieved BusLines:");
++//            retrievedBusLines.forEach(System.out::println);
++//
++//            // Get a specific Stop by ID
++//            Optional<Stop> stop = driver.getStopById(1);
++//            stop.ifPresent(s -> System.out.println("Retrieved Stop by ID: " + s));
++//
++////            driver.clearTables();
++//
++//            driver.commit();
++//        } catch (Exception e) {
++//            System.out.println("Error during database operations: " + e.getMessage());
++////            try {
++////                driver.rollback();
++////            } catch (Exception re) {
++////                System.out.println("Error during rollback: " + re.getMessage());
++////            }
++//        } finally {
++//            try {
++//                driver.disconnect();
++//            } catch (Exception e) {
++//                System.out.println("Error disconnecting from the database: " + e.getMessage());
++//            }
++//        }
++//    }
+\ No newline at end of file

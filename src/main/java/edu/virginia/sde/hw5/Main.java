@@ -29,6 +29,11 @@ public class Main {
             StopReader stopReader = new StopReader(con);
             List<Stop> stops = stopReader.getStops();
 
+            List<BusLine> bus = driver.getBusLines();
+            System.out.println(bus);
+//            List<Stop> stop = driver.getAllStops();
+//            System.out.println(stop);
+
             driver.addStops(stops);
             driver.addBusLines(busLines);
 
@@ -39,18 +44,25 @@ public class Main {
 //
 //            System.out.println("Number of stops: " + stops.size());
 //            for (Stop stop : stops) {
-//                System.out.println("Processing stop ID: " + stop.getId());
+//                System.out.println("Processing stop ID: " + stop);
 //            }
-//
-//            System.out.println("Number of bus lines: " + busLines.size());
-//            for (BusLine busLine : busLines) {
-//                System.out.println("Processing bus line ID: " + busLine.getId());
-//            }
+
+            System.out.println("Number of bus lines: " + busLines.size());
+            for (BusLine busLine : busLines) {
+//                System.out.println(busLine);
+//                System.out.println(busLine.getShortName());
+            }
+
+//            System.out.println("-----------------------");
+//            System.out.println("-----------------------");
+//            System.out.println("-----------------------");
+//            System.out.println("-----------------------");
+//            System.out.println(driver.getBusLineByLongName("Night Pilot"));
 
             driver.commit();
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             System.out.println("Error during database operations: " + e.getMessage());
             try {
                 driver.rollback();
