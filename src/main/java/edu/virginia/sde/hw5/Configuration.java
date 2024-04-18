@@ -49,36 +49,36 @@ public class Configuration {
      *  busStopsURL, busLinesURL, databaseFilename
      */
     private void parseJsonConfigFile() {
-        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
-
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-
-//        System.out.println(inputStream);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
 //
-        String jsonString = bufferedReader.lines().collect(Collectors.joining());
-
-        JSONObject json = new JSONObject(new JSONTokener(jsonString));
-
-        JSONObject endpoints = json.getJSONObject("endpoints");
-
-        busStopsURL = new URL(endpoints.getString("stops"));
-        busLinesURL = new URL(endpoints.getString("lines"));
-        databaseFilename = json.getString("database");
-
-//        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
-//             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-//            String jsonString = bufferedReader.lines().collect(Collectors.joining());
+//        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 //
-//            JSONObject json = new JSONObject(new JSONTokener(jsonString));
+////        System.out.println(inputStream);
+//        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+////
+//        String jsonString = bufferedReader.lines().collect(Collectors.joining());
 //
-//            JSONObject endpoints = json.getJSONObject("endpoints");
-//            busStopsURL = new URL(endpoints.getString("stops"));
-//            busLinesURL = new URL(endpoints.getString("lines"));
-//            databaseFilename = json.getString("database");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+//        JSONObject json = new JSONObject(new JSONTokener(jsonString));
+//
+//        JSONObject endpoints = json.getJSONObject("endpoints");
+//
+//        busStopsURL = new URL(endpoints.getString("stops"));
+//        busLinesURL = new URL(endpoints.getString("lines"));
+//        databaseFilename = json.getString("database");
+
+        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String jsonString = bufferedReader.lines().collect(Collectors.joining());
+
+            JSONObject json = new JSONObject(new JSONTokener(jsonString));
+
+            JSONObject endpoints = json.getJSONObject("endpoints");
+            busStopsURL = new URL(endpoints.getString("stops"));
+            busLinesURL = new URL(endpoints.getString("lines"));
+            databaseFilename = json.getString("database");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
