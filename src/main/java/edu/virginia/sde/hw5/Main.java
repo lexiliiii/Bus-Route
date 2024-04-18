@@ -18,10 +18,11 @@ public class Main {
 
         try {
             driver.connect();
+            driver.createTables();
             driver.clearTables();
 
 
-            driver.createTables();
+
 
             BusLineReader busReader = new BusLineReader(con);
             List<BusLine> busLines = busReader.getBusLines();
@@ -64,18 +65,19 @@ public class Main {
                 System.out.println("Error disconnecting from the database: " + e.getMessage());
             }
         }
+        //testGetRecommendedBusLine_Stopexits_hasBusline
+        Stop startStop = new Stop(4235108, "Alderman Rd @ O-Hill Dining Hall", 38.033937, -78.51424);
+        Stop endStop = new Stop(4235106, "Alderman Rd @ Gooch/Dillard (Southbound)", 38.029305, -78.516414);
+        BusLineService busLineService = new BusLineService(driver);
+        Optional<BusLine> actualRecommendedBusLine = busLineService.getRecommendedBusLine(startStop, endStop);
+        BusLine recommendedBusLine = new BusLine(4013976, true, "Orange Line", "Orange");
+        // assertTrue(actualRecommendedBusLine.isPresent());
+        // assertEquals(recommendedBusLine, actualRecommendedBusLine.get());**/
+        boolean result=actualRecommendedBusLine.equals(recommendedBusLine);
+        System.out.println(actualRecommendedBusLine);
+        System.out.println(result);
 
-            //testGetRecommendedBusLine_Stopexits_hasBusline
-            Stop startStop = new Stop(4235108, "Alderman Rd @ O-Hill Dining Hall", 38.033937, -78.51424);
-            Stop endStop = new Stop(4235106, "Alderman Rd @ Gooch/Dillard (Southbound)", 38.029305, -78.516414);
-            BusLineService busLineService = new BusLineService(driver);
-            Optional<BusLine> actualRecommendedBusLine = busLineService.getRecommendedBusLine(startStop, endStop);
-            BusLine recommendedBusLine = new BusLine(4013976, true, "Orange Line", "Orange");
-            // assertTrue(actualRecommendedBusLine.isPresent());
-            // assertEquals(recommendedBusLine, actualRecommendedBusLine.get());**/
-            boolean result=actualRecommendedBusLine.equals(recommendedBusLine);
-            System.out.println(actualRecommendedBusLine);
-            System.out.println(result);
+    }
 
-        }
+
 }
