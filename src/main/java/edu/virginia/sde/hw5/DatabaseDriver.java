@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.sql.*;
 
@@ -279,7 +280,7 @@ public class DatabaseDriver {
                 String longName = rs.getString("LongName");
                 String shortName = rs.getString("ShortName");
 
-                System.out.println("Short Name: " + shortName);/////
+//                System.out.println("Short Name: " + shortName);
 
 
                 BusLine busLine = new BusLine(id, isActive, longName, shortName);
@@ -445,7 +446,10 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-//        List<BusLine> allBuslines =
+        List<BusLine> allBuslines = getBusLines();
+        if(!allBuslines.contains(busLine)){
+            throw new NoSuchElementException("This busline is not in the database");
+        }
 
         List<Stop> stops = new ArrayList<>();
         String sql = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
@@ -485,11 +489,13 @@ public class DatabaseDriver {
         String deleteRoutes = "DELETE FROM Routes;";
         String deleteStops = "DELETE FROM Stops;";
         String deleteBusLines = "DELETE FROM BusLines;";
+        String resetAutoincrement = "DELETE FROM sqlite_sequence WHERE name = 'Routes';";
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(deleteRoutes);
             stmt.execute(deleteStops);
             stmt.execute(deleteBusLines);
+            stmt.execute(resetAutoincrement);
 
         } catch (SQLException e) {
             connection.rollback();
