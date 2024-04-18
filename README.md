@@ -13,16 +13,16 @@ List the primary contributions of each author. It is recommended to update this 
 
 ### [Enhui Li]
 
-* Implemented PART_3 and PART_4
-* Helped check PART_1 and PART_2
+* Implemented PART_3 and PART_4 
+* Implemented PART_1 and PART_2 and PART_3 
 * Wrote corresponding testings for PART_2 and PART_3
 
 ### [Casey Shi]
 
-* Implemented PART_1
-* Implemented PART_5
+* Implemented PART_1 
+* Implemented PART_5 
 * Wrote corresponding testings for PART_5
-  
+
 ### [Ziqian Zhao]
 
 * Implemented PART_2
