@@ -12,7 +12,6 @@ import java.sql.*;
 public class DatabaseDriver {
     private final String sqliteFilename;
     private Connection connection;
-    //TODO: DO NOT CALL COMMIT IN ANY METHODS
     public DatabaseDriver(Configuration configuration) {
         this.sqliteFilename = configuration.getDatabaseFilename();
     }
@@ -92,7 +91,6 @@ public class DatabaseDriver {
                         "FOREIGN KEY (BusLineID) REFERENCES BusLines(ID) ON DELETE CASCADE, " +
                         "FOREIGN KEY (StopID) REFERENCES Stops(ID) ON DELETE CASCADE);";
 
-        // Using try-with-resources to ensure the statement is closed after execution
         try (Statement statement = connection.createStatement()) {
             statement.execute(Stops);
             statement.execute(BusLines);
@@ -127,15 +125,6 @@ public class DatabaseDriver {
             connection.rollback();
             throw new SQLException("Error adding stops: " + e.getMessage());
         }
-
-        //TODO: implement
-//        try {
-//            //Your JDBC code codes here
-//        } catch (SQLException e) {
-//            rollback(); //rolls back any changes before the Exception was thrown
-//            throw e; //still throws the SQLException
-//        }
-
     }
 
     /**
@@ -145,7 +134,6 @@ public class DatabaseDriver {
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
-        //TODO: implement
 
         List<Stop> collection = new ArrayList<>();
         String sql = "SELECT * FROM Stops;";
@@ -195,22 +183,7 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
-
-        //TODO: implement
-        //use select Query with a Where clause
-//        return Optional.empty();
     }
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Get all Stops whose name contains the substring (case-insensitive). For example, the parameter "Rice"
@@ -241,10 +214,6 @@ public class DatabaseDriver {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
 
-        //TODO: implement
-
-//SELECT * FROM COURSES WHERE Subject = ‘CS’;
-
         return collection;
     }
 
@@ -255,7 +224,7 @@ public class DatabaseDriver {
      * the method was called. This could happen if, for example, a BusLine contains a Stop that is not in the database.
      */
 
-    public void addBusLines(List<BusLine> busLines) throws SQLException {
+    public void addBusLines(List<BusLine> busLines) throws SQLException {//////////
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
@@ -310,15 +279,21 @@ public class DatabaseDriver {
                 String longName = rs.getString("LongName");
                 String shortName = rs.getString("ShortName");
 
-                collection.add(new BusLine(id, isActive, longName, shortName));
+                System.out.println("Short Name: " + shortName);/////
+
+
+                BusLine busLine = new BusLine(id, isActive, longName, shortName);
+
+//                Route route = getRouteForBusLine(busLine);
+//                busLine.setRoute(route);
+
+                collection.add(busLine);
             }
 
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
         return collection;
-
-        //TODO: implement
     }
 
     /**
@@ -329,7 +304,7 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String sql = "SELECT * FROM BusLine WHERE ID = ?";
+        String sql = "SELECT * FROM BusLines WHERE ID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, busLineId);
@@ -340,6 +315,10 @@ public class DatabaseDriver {
                     String shortName = rs.getString("ShortName");
 
                     BusLine busLine = new BusLine(busLineId, isActive, longName, shortName);
+
+                    Route route = getRouteForBusLine(busLine);
+                    busLine.setRoute(route);
+
                     return Optional.of(busLine);
                 } else {
                     return Optional.empty();
@@ -348,8 +327,6 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
-        //TODO: implement
-//        return Optional.empty();
     }
 
     /**
@@ -360,7 +337,7 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String sql = "SELECT * FROM BusLine WHERE LongName = ?";
+        String sql = "SELECT * FROM BusLines WHERE LongName = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, longName);
@@ -371,6 +348,10 @@ public class DatabaseDriver {
                     String shortName = rs.getString("ShortName");
 
                     BusLine busLine = new BusLine(id, isActive, longName, shortName);
+
+                    Route route = getRouteForBusLine(busLine);
+                    busLine.setRoute(route);
+
                     return Optional.of(busLine);
                 } else {
                     return Optional.empty();
@@ -379,8 +360,6 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             throw new SQLException("Error reading from Stops table: " + e.getMessage());
         }
-        //TODO: implement
-//        return Optional.empty();
     }
 
     /**
@@ -391,7 +370,7 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        String sql = "SELECT * FROM BusLine WHERE ShortName = ?";
+        String sql = "SELECT * FROM BusLines WHERE ShortName = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, shortName);
@@ -402,6 +381,10 @@ public class DatabaseDriver {
                     String longName = rs.getString("LongName");
 
                     BusLine busLine = new BusLine(id, isActive, longName, shortName);
+
+                    Route route = getRouteForBusLine(busLine);
+                    busLine.setRoute(route);
+
                     return Optional.of(busLine);
                 } else {
                     return Optional.empty();
@@ -449,8 +432,6 @@ public class DatabaseDriver {
             throw new SQLException("Error get bus lines by stop: " + e.getMessage());
         }
         return collection;
-        //TODO: implement
-//        return null;
     }
 
     /**
@@ -459,14 +440,12 @@ public class DatabaseDriver {
      * @throws SQLException
      * @throws java.util.NoSuchElementException if busLine is not in the database
      */
-    public Route getRouteForBusLine(BusLine busLine) throws SQLException {
+    public Route getRouteForBusLine(BusLine busLine) throws SQLException {////
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
-        if (connection.isClosed()) {
-            throw new IllegalStateException("Connection is closed right now.");
-        }
+//        List<BusLine> allBuslines =
 
         List<Stop> stops = new ArrayList<>();
         String sql = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
@@ -492,8 +471,6 @@ public class DatabaseDriver {
         catch (SQLException e) {
             throw new SQLException("Error get route for BusLine: " + e.getMessage());
         }
-        //TODO: implement
-//        return null;
     }
 
     /**
@@ -518,13 +495,30 @@ public class DatabaseDriver {
             connection.rollback();
             throw new SQLException("Error clearing tables: " + e.getMessage());
         }
-
-        //        try {
-//            //Your JDBC code codes here
-//        } catch (SQLException e) {
-//            rollback(); //rolls back any changes before the Exception was thrown
-//            throw e; //still throws the SQLException
-//        }
-        //TODO: implement
     }
+
+//        public static void main(String[] args){
+////        Configuration con = new Configuration();
+////        con.parseJsonConfigFile();
+//        try {
+//            Configuration con = new Configuration();
+//            StopReader stop = new StopReader(con);
+//            BusLineReader bus = new BusLineReader(con);
+//            DatabaseDriver driver = new DatabaseDriver(con);
+//
+//            driver.connect();
+//
+////
+////            List<Stop> temp = driver.getAllStops();
+////            System.out.println(temp);
+//
+//            List<BusLine> temp = driver.getBusLines();
+//            System.out.println(temp);
+//
+//            driver.disconnect();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+//        }
+//    }
 }
