@@ -44,7 +44,7 @@ public class Main {
 //
 //            System.out.println("Number of bus lines: " + busLines.size());
 //            for (BusLine busLine : busLines) {
-//                System.out.println("Processing bus line ID: " + busLine.getId());
+//                System.out.println(busLine);
 //            }
 
             driver.commit();

@@ -57,13 +57,26 @@ public class Configuration {
             busStopsURL = new URL(endpoints.getString("stops"));
             busLinesURL = new URL(endpoints.getString("lines"));
             databaseFilename = json.getString("database");
-//            System.out.println(busStopsURL);
-            //TODO: Parse config.json to set the three fields
+            databaseFilename = json.getString("database");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
+//        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
+//             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//            String jsonString = bufferedReader.lines().collect(Collectors.joining());
 //
+//            JSONObject json = new JSONObject(new JSONTokener(jsonString));
+//
+//            JSONObject endpoints = json.getJSONObject("endpoints");
+//        if (busLinesURL == null) {
+//
+//            busLinesURL = new URL(endpoints.getString("lines"));
+//
+//        }
+//            busStopsURL = new URL(endpoints.getString("stops"));
+//            databaseFilename = json.getString("database");
+    }
+
 //    public static void main(String[] args){
 ////        Configuration con = new Configuration();
 ////        con.parseJsonConfigFile();
@@ -73,7 +86,7 @@ public class Configuration {
 //            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
 //            System.out.println("Database Filename: " + con.getDatabaseFilename());
 //        } catch (Exception e) {
-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+//            e.printStackTrace();
 //        }
 //    }
 }
