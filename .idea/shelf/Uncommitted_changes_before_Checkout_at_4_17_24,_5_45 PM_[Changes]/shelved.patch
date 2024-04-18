@@ -1,0 +1,181 @@
+Index: src/main/java/edu/virginia/sde/hw5/BusLineService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport java.sql.SQLException;\nimport java.util.List;\nimport java.util.Optional;\n\npublic class BusLineService {\n    private final DatabaseDriver databaseDriver;\n\n    public BusLineService(DatabaseDriver databaseDriver) {\n        this.databaseDriver = databaseDriver;\n    }\n\n    public void addStops(List<Stop> stops) {\n        try {\n            databaseDriver.connect();\n            databaseDriver.addStops(stops);\n            databaseDriver.disconnect();\n        } catch (SQLException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n    public void addBusLines(List<BusLine> busLines) {\n        try {\n            databaseDriver.connect();\n            databaseDriver.addBusLines(busLines);\n            databaseDriver.disconnect();\n        } catch (SQLException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n    public List<BusLine> getBusLines() {\n        try {\n            databaseDriver.connect();\n            var busLines = databaseDriver.getBusLines();\n            databaseDriver.disconnect();\n            return busLines;\n        } catch (SQLException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n    public List<Stop> getStops() {\n        try {\n            databaseDriver.connect();\n            var stops = databaseDriver.getAllStops();\n            databaseDriver.disconnect();\n            return stops;\n        } catch (SQLException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n    public Route getRoute(BusLine busLine) {\n        try {\n            databaseDriver.connect();\n            var stops = databaseDriver.getRouteForBusLine(busLine);\n            databaseDriver.disconnect();\n            return stops;\n        } catch (SQLException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n    /**\n     * Return the closest stop to a given coordinate (using Euclidean distance, not great circle distance)\n     * @param latitude - North/South coordinate (positive is North, Negative is South) in degrees\n     * @param longitude - East/West coordinate (negative is West, Positive is East) in degrees\n     * @return the closest Stop\n     */\n    public Stop getClosestStop(double latitude, double longitude) {\n        //TODO: implement\n        return null;\n    }\n\n    /**\n     * Given two stop, a source and a destination, find the shortest (by distance) BusLine that starts\n     * from source and ends at Destination.\n     * @return Optional.empty() if no bus route visits both points\n     * @throws IllegalArgumentException if either stop doesn't exist in the database\n     */\n    public Optional<BusLine> getRecommendedBusLine(Stop source, Stop destination) {\n        //TODO: implement\n        return Optional.empty();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/BusLineService.java b/src/main/java/edu/virginia/sde/hw5/BusLineService.java
+--- a/src/main/java/edu/virginia/sde/hw5/BusLineService.java	(revision 314a67f10ec14f0b74b03a7bca3c002d69d2c0ad)
++++ b/src/main/java/edu/virginia/sde/hw5/BusLineService.java	(date 1713389042546)
+@@ -64,6 +64,20 @@
+         }
+     }
+ 
++    public int decideLocation(double latitude, double longitude){
++        int location = 0;
++        if(latitude > 0 && longitude > 0){
++            location = 3;
++        }
++        else if(latitude > 0 && longitude < 0){
++            location = 4;
++        }
++        else if(latitude < 0 && longitude > 0){
++            location = 2;
++        }
++        return location;
++    }
++
+     /**
+      * Return the closest stop to a given coordinate (using Euclidean distance, not great circle distance)
+      * @param latitude - North/South coordinate (positive is North, Negative is South) in degrees
+@@ -71,6 +85,11 @@
+      * @return the closest Stop
+      */
+     public Stop getClosestStop(double latitude, double longitude) {
++        try {
++            List<Stop> stopsCollection = databaseDriver.getAllStops();
++        } catch (SQLException e) {
++            throw new RuntimeException(e);
++        }
+         //TODO: implement
+         return null;
+     }
+Index: src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java b/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java
+new file mode 100644
+--- /dev/null	(date 1713389042550)
++++ b/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java	(date 1713389042550)
+@@ -0,0 +1,76 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class DatabaseDriverTest {
++
++    @Test
++    void connect() {
++    }
++
++    @Test
++    void commit() {
++    }
++
++    @Test
++    void rollback() {
++    }
++
++    @Test
++    void disconnect() {
++    }
++
++    @Test
++    void createTables() {
++    }
++
++    @Test
++    void addStops() {
++    }
++
++    @Test
++    void getAllStops() {
++    }
++
++    @Test
++    void getStopById() {
++    }
++
++    @Test
++    void getStopsByName() {
++    }
++
++    @Test
++    void addBusLines() {
++    }
++
++    @Test
++    void getBusLines() {
++    }
++
++    @Test
++    void getBusLinesById() {
++    }
++
++    @Test
++    void getBusLineByLongName() {
++    }
++
++    @Test
++    void getBusLineByShortName() {
++    }
++
++    @Test
++    void getBusLinesByStop() {
++    }
++
++    @Test
++    void getRouteForBusLine() {
++    }
++
++    @Test
++    void clearTables() {
++    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713389042548)
++++ b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java	(date 1713389042548)
+@@ -0,0 +1,17 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class BusLineReaderTest {
++
++    @BeforeEach
++    void setUp() {
++    }
++
++    @Test
++    void getBusLines() {
++    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713389042549)
++++ b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java	(date 1713389042549)
+@@ -0,0 +1,12 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class StopReaderTest {
++
++    @Test
++    void getStops() {
++    }
++}
+\ No newline at end of file

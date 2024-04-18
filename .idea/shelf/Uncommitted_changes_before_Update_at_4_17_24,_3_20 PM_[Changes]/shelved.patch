@@ -1,0 +1,46 @@
+Index: src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713381093292)
++++ b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java	(date 1713381093292)
+@@ -0,0 +1,12 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class BusLineReaderTest {
++
++    @Test
++    void getBusLines() {
++    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713381093283)
++++ b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java	(date 1713381093283)
+@@ -0,0 +1,12 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class StopReaderTest {
++
++    @Test
++    void getStops() {
++    }
++}
+\ No newline at end of file

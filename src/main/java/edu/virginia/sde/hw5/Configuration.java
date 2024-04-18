@@ -1,7 +1,9 @@
 package edu.virginia.sde.hw5;
 
+import java.awt.font.ShapeGraphicAttribute;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -47,6 +49,23 @@ public class Configuration {
      *  busStopsURL, busLinesURL, databaseFilename
      */
     private void parseJsonConfigFile() {
+//        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
+//
+//        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+//
+////        System.out.println(inputStream);
+//        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+////
+//        String jsonString = bufferedReader.lines().collect(Collectors.joining());
+//
+//        JSONObject json = new JSONObject(new JSONTokener(jsonString));
+//
+//        JSONObject endpoints = json.getJSONObject("endpoints");
+//
+//        busStopsURL = new URL(endpoints.getString("stops"));
+//        busLinesURL = new URL(endpoints.getString("lines"));
+//        databaseFilename = json.getString("database");
+
         try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
             String jsonString = bufferedReader.lines().collect(Collectors.joining());
@@ -57,23 +76,23 @@ public class Configuration {
             busStopsURL = new URL(endpoints.getString("stops"));
             busLinesURL = new URL(endpoints.getString("lines"));
             databaseFilename = json.getString("database");
-//            System.out.println(busStopsURL);
-            //TODO: Parse config.json to set the three fields
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
-//
-//    public static void main(String[] args){
-////        Configuration con = new Configuration();
-////        con.parseJsonConfigFile();
-//        try {
-//            Configuration con = new Configuration();
+
+    public static void main(String[] args){
+//        Configuration con = new Configuration();
+//        con.parseJsonConfigFile();
+        try {
+            Configuration con = new Configuration();
 //            System.out.println("Bus Stops URL: " + con.getBusStopsURL());
 //            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
 //            System.out.println("Database Filename: " + con.getDatabaseFilename());
-//        } catch (Exception e) {
-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
-//        }
-//    }
+            System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+        }
+    }
 }

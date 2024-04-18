@@ -1,0 +1,409 @@
+Index: src/main/java/edu/virginia/sde/hw5/StopReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport org.json.JSONObject;\nimport org.json.JSONTokener;\nimport org.json.JSONArray;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.InputStreamReader;\nimport java.net.URL;\nimport java.nio.charset.StandardCharsets;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\npublic class StopReader {\n\n    private final URL busStopsApiUrl;\n\n    public StopReader(Configuration configuration) {\n        this.busStopsApiUrl = configuration.getBusStopsURL();\n    }\n\n    /**\n     * Read all the stops from the \"stops\" json URL from Configuration Reader\n     * @return List of stops\n     */\n    public List<Stop> getStops() {//TODO: implement\n        List<Stop> collection = new ArrayList<>();\n\n        try(var inputStream = busStopsApiUrl.openStream();\n            var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);\n            var bufferedReader = new BufferedReader(inputStreamReader)) {\n            var fileContents = bufferedReader.lines().collect(Collectors.joining(\"\\n\"));\n\n            JSONObject json = new JSONObject(new JSONTokener(fileContents));\n            JSONArray stops = json.getJSONArray(\"stops\");\n            for(int i = 0; i < stops.length(); i ++){\n                JSONObject eachStop = stops.getJSONObject(i);\n\n                int id = eachStop.getInt(\"id\");\n                String name = eachStop.getString(\"name\");\n                JSONArray position = eachStop.getJSONArray(\"position\");\n                double latitude = position.getDouble(0);\n                double longitude = position.getDouble(1);\n\n                collection.add(new Stop(id, name, latitude, longitude));\n            }\n        } catch (IOException e) {\n            throw new RuntimeException(e);\n        }\n        return collection;\n    }\n\n\n//    public static void main(String[] args){\n//        try {\n//            Configuration con = new Configuration();\n//            StopReader stop = new StopReader(con);\n//            List<Stop> temp = stop.getStops();\n//            System.out.println(temp);\n//        } catch (Exception e) {\n//            e.printStackTrace();\n//        }\n//    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/StopReader.java b/src/main/java/edu/virginia/sde/hw5/StopReader.java
+--- a/src/main/java/edu/virginia/sde/hw5/StopReader.java	(revision ba6dce0438aa381aa7c60c4e3a64e8d4df2d1d24)
++++ b/src/main/java/edu/virginia/sde/hw5/StopReader.java	(date 1713456444996)
+@@ -28,6 +28,24 @@
+     public List<Stop> getStops() {//TODO: implement
+         List<Stop> collection = new ArrayList<>();
+ 
++//        var inputStream = busStopsApiUrl.openStream();
++//        var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
++//        var bufferedReader = new BufferedReader(inputStreamReader);
++//        var fileContents = bufferedReader.lines().collect(Collectors.joining("\n"));
++//        JSONObject json = new JSONObject(new JSONTokener(fileContents));
++//        JSONArray stops = json.getJSONArray("stops");
++//        for(int i = 0; i < stops.length(); i ++) {
++//            JSONObject eachStop = stops.getJSONObject(i);
++//
++//            int id = eachStop.getInt("id");
++//            String name = eachStop.getString("name");
++//            JSONArray position = eachStop.getJSONArray("position");
++//            double latitude = position.getDouble(0);
++//            double longitude = position.getDouble(1);
++//
++//            collection.add(new Stop(id, name, latitude, longitude));
++//        }
++
+         try(var inputStream = busStopsApiUrl.openStream();
+             var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             var bufferedReader = new BufferedReader(inputStreamReader)) {
+Index: src/main/java/edu/virginia/sde/hw5/Configuration.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\nimport java.net.URL;\nimport java.util.Objects;\nimport org.json.JSONObject;\nimport org.json.JSONTokener;\nimport java.util.stream.Collectors;\n\npublic class Configuration {\n    public static final String configurationFilename = \"config.json\";\n\n    private URL busStopsURL;\n\n    private URL busLinesURL;\n\n    private String databaseFilename;\n\n    public Configuration() { }\n\n    public URL getBusStopsURL() {\n        if (busStopsURL == null) {\n            parseJsonConfigFile();\n        }\n        return busStopsURL;\n    }\n\n    public URL getBusLinesURL() {\n        if (busLinesURL == null) {\n            parseJsonConfigFile();\n        }\n        return busLinesURL;\n    }\n\n    public String getDatabaseFilename() {\n        if (databaseFilename == null) {\n            parseJsonConfigFile();\n        }\n        return databaseFilename;\n    }\n\n    /**\n     * Parse the JSON file config.json to set all three of the fields:\n     *  busStopsURL, busLinesURL, databaseFilename\n     */\n    private void parseJsonConfigFile() {\n        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));\n             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {\n            String jsonString = bufferedReader.lines().collect(Collectors.joining());\n\n            JSONObject json = new JSONObject(new JSONTokener(jsonString));\n\n            JSONObject endpoints = json.getJSONObject(\"endpoints\");\n            busStopsURL = new URL(endpoints.getString(\"stops\"));\n            busLinesURL = new URL(endpoints.getString(\"lines\"));\n            databaseFilename = json.getString(\"database\");\n//            System.out.println(busStopsURL);\n            //TODO: Parse config.json to set the three fields\n        } catch (IOException e) {\n            throw new RuntimeException(e);\n        }\n    }\n//\n//    public static void main(String[] args){\n////        Configuration con = new Configuration();\n////        con.parseJsonConfigFile();\n//        try {\n//            Configuration con = new Configuration();\n//            System.out.println(\"Bus Stops URL: \" + con.getBusStopsURL());\n//            System.out.println(\"Bus Lines URL: \" + con.getBusLinesURL());\n//            System.out.println(\"Database Filename: \" + con.getDatabaseFilename());\n//        } catch (Exception e) {\n//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.\n//        }\n//    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/Configuration.java b/src/main/java/edu/virginia/sde/hw5/Configuration.java
+--- a/src/main/java/edu/virginia/sde/hw5/Configuration.java	(revision ba6dce0438aa381aa7c60c4e3a64e8d4df2d1d24)
++++ b/src/main/java/edu/virginia/sde/hw5/Configuration.java	(date 1713459581209)
+@@ -1,7 +1,9 @@
+ package edu.virginia.sde.hw5;
+ 
++import java.awt.font.ShapeGraphicAttribute;
+ import java.io.BufferedReader;
+ import java.io.IOException;
++import java.nio.charset.StandardCharsets;
+ import java.io.InputStream;
+ import java.io.InputStreamReader;
+ import java.net.URL;
+@@ -47,33 +49,50 @@
+      *  busStopsURL, busLinesURL, databaseFilename
+      */
+     private void parseJsonConfigFile() {
+-        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
+-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+-            String jsonString = bufferedReader.lines().collect(Collectors.joining());
++        InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
++
++        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
++
++//        System.out.println(inputStream);
++        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
++//
++        String jsonString = bufferedReader.lines().collect(Collectors.joining());
+ 
+-            JSONObject json = new JSONObject(new JSONTokener(jsonString));
++        JSONObject json = new JSONObject(new JSONTokener(jsonString));
+ 
+-            JSONObject endpoints = json.getJSONObject("endpoints");
+-            busStopsURL = new URL(endpoints.getString("stops"));
+-            busLinesURL = new URL(endpoints.getString("lines"));
+-            databaseFilename = json.getString("database");
+-//            System.out.println(busStopsURL);
+-            //TODO: Parse config.json to set the three fields
+-        } catch (IOException e) {
+-            throw new RuntimeException(e);
+-        }
+-    }
++        JSONObject endpoints = json.getJSONObject("endpoints");
++
++        busStopsURL = new URL(endpoints.getString("stops"));
++        busLinesURL = new URL(endpoints.getString("lines"));
++        databaseFilename = json.getString("database");
++
++//        try (InputStream inputStream = Objects.requireNonNull(Configuration.class.getResourceAsStream(configurationFilename));
++//             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
++//            String jsonString = bufferedReader.lines().collect(Collectors.joining());
++//
++//            JSONObject json = new JSONObject(new JSONTokener(jsonString));
+ //
+-//    public static void main(String[] args){
+-////        Configuration con = new Configuration();
+-////        con.parseJsonConfigFile();
+-//        try {
+-//            Configuration con = new Configuration();
++//            JSONObject endpoints = json.getJSONObject("endpoints");
++//            busStopsURL = new URL(endpoints.getString("stops"));
++//            busLinesURL = new URL(endpoints.getString("lines"));
++//            databaseFilename = json.getString("database");
++//        } catch (IOException e) {
++//            throw new RuntimeException(e);
++//        }
++
++    }
++
++    public static void main(String[] args){
++//        Configuration con = new Configuration();
++//        con.parseJsonConfigFile();
++        try {
++            Configuration con = new Configuration();
+ //            System.out.println("Bus Stops URL: " + con.getBusStopsURL());
+ //            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
+ //            System.out.println("Database Filename: " + con.getDatabaseFilename());
+-//        } catch (Exception e) {
+-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+-//        }
+-//    }
++            System.out.println();
++        } catch (Exception e) {
++            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
++        }
++    }
+ }
+Index: src/main/java/edu/virginia/sde/hw5/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\nimport javax.print.DocFlavor;\nimport java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.SQLException;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Optional;\nimport java.sql.*;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args){\n        Configuration con = new Configuration();\n        String databaseName = \"bus_stops.sqlite\";\n        DatabaseDriver driver = new DatabaseDriver(databaseName);\n\n//        System.out.println(con.getBusLinesURL());\n\n        try {\n            driver.connect();\n            driver.clearTables();\n\n\n            driver.createTables();\n\n            BusLineReader busReader = new BusLineReader(con);\n            List<BusLine> busLines = busReader.getBusLines();\n\n            StopReader stopReader = new StopReader(con);\n            List<Stop> stops = stopReader.getStops();\n\n            driver.addStops(stops);\n            driver.addBusLines(busLines);\n\n//            List<Route> routes = new ArrayList<>();\n//            for(int i = 0; i < busLines.size(); i ++){\n//                routes.add(busLines.get(i).getRoute());\n//            }\n\n//            System.out.println(\"Number of stops: \" + stops.size());\n//            for (Stop stop : stops) {\n//                System.out.println(\"Processing stop ID: \" + stop.getId());\n//            }\n//\n//            System.out.println(\"Number of bus lines: \" + busLines.size());\n//            for (BusLine busLine : busLines) {\n//                System.out.println(\"Processing bus line ID: \" + busLine.getId());\n//            }\n\n            driver.commit();\n\n        } catch (Exception e) {\n            e.printStackTrace();\n            System.out.println(\"Error during database operations: \" + e.getMessage());\n            try {\n                driver.rollback();\n            } catch (SQLException re) {\n                System.out.println(\"Error during rollback: \" + re.getMessage());\n            }\n        } finally {\n            try {\n                driver.disconnect();\n            } catch (SQLException e) {\n                System.out.println(\"Error disconnecting from the database: \" + e.getMessage());\n            }\n        }\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/Main.java b/src/main/java/edu/virginia/sde/hw5/Main.java
+--- a/src/main/java/edu/virginia/sde/hw5/Main.java	(revision ba6dce0438aa381aa7c60c4e3a64e8d4df2d1d24)
++++ b/src/main/java/edu/virginia/sde/hw5/Main.java	(date 1713456086961)
+@@ -29,6 +29,11 @@
+             StopReader stopReader = new StopReader(con);
+             List<Stop> stops = stopReader.getStops();
+ 
++            List<BusLine> bus = driver.getBusLines();
++            System.out.println(bus);
++//            List<Stop> stop = driver.getAllStops();
++//            System.out.println(stop);
++
+             driver.addStops(stops);
+             driver.addBusLines(busLines);
+ 
+@@ -39,18 +44,25 @@
+ 
+ //            System.out.println("Number of stops: " + stops.size());
+ //            for (Stop stop : stops) {
+-//                System.out.println("Processing stop ID: " + stop.getId());
++//                System.out.println("Processing stop ID: " + stop);
+ //            }
+-//
+-//            System.out.println("Number of bus lines: " + busLines.size());
+-//            for (BusLine busLine : busLines) {
+-//                System.out.println("Processing bus line ID: " + busLine.getId());
+-//            }
++
++            System.out.println("Number of bus lines: " + busLines.size());
++            for (BusLine busLine : busLines) {
++//                System.out.println(busLine);
++//                System.out.println(busLine.getShortName());
++            }
++
++//            System.out.println("-----------------------");
++//            System.out.println("-----------------------");
++//            System.out.println("-----------------------");
++//            System.out.println("-----------------------");
++//            System.out.println(driver.getBusLineByLongName("Night Pilot"));
+ 
+             driver.commit();
+ 
+         } catch (Exception e) {
+-            e.printStackTrace();
++//            e.printStackTrace();
+             System.out.println("Error during database operations: " + e.getMessage());
+             try {
+                 driver.rollback();
+Index: src/test/java/edu/virginia/sde/hw5/BusLineServiceTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/BusLineServiceTest.java b/src/test/java/edu/virginia/sde/hw5/BusLineServiceTest.java
+new file mode 100644
+--- /dev/null	(date 1713456086966)
++++ b/src/test/java/edu/virginia/sde/hw5/BusLineServiceTest.java	(date 1713456086966)
+@@ -0,0 +1,18 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class BusLineServiceTest {
++
++
++    @Test
++    void getClosestStop() {
++
++    }
++
++    @Test
++    void getRecommendedBusLine() {
++    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713456086967)
++++ b/src/test/java/edu/virginia/sde/hw5/BusLineReaderTest.java	(date 1713456086967)
+@@ -0,0 +1,56 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++import org.junit.jupiter.api.BeforeEach;
++import static org.junit.jupiter.api.Assertions.*;
++import org.junit.jupiter.api.extension.ExtendWith;
++import org.mockito.Mock;
++import org.mockito.junit.jupiter.MockitoExtension;
++
++import java.net.MalformedURLException;
++import java.util.HashSet;
++import java.util.Set;
++import static org.mockito.Mockito.*;
++import org.json.JSONArray;
++import org.json.JSONObject;
++import org.json.JSONTokener;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStreamReader;
++import java.net.URL;
++import java.nio.charset.StandardCharsets;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.stream.Collectors;
++
++
++class BusLineReaderTest {
++
++    @Mock
++    private URL stops;
++
++    @Mock
++    private URL lines;
++
++    @Mock
++    private Configuration configuration;
++
++    private BusLineReader busLineReader;
++
++    @BeforeEach
++    void setUp() throws MalformedURLException {
++        stops = new URL("https://www.cs.virginia.edu/~pm8fc/busses/stops.json");
++        lines = new URL("https://www.cs.virginia.edu/~pm8fc/busses/lines.json");
++        when(configuration.getBusLinesURL()).thenReturn(lines);
++        when(configuration.getBusStopsURL()).thenReturn(stops);
++        busLineReader = new BusLineReader(configuration);
++    }
++
++//    @Test
++//    void getBusLines() {
++//        List<BusLine> buslineList = busLineReader.getBusLines();
++//        int actualSize = buslineList.size();
++//        assertEquals(actualSize,16);
++//    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java b/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java
+new file mode 100644
+--- /dev/null	(date 1713456086965)
++++ b/src/test/java/edu/virginia/sde/hw5/DatabaseDriverTest.java	(date 1713456086965)
+@@ -0,0 +1,95 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import java.net.MalformedURLException;
++import java.net.URL;
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Optional;
++import java.sql.*;
++import org.mockito.Mock;
++import org.junit.jupiter.api.BeforeEach;
++import static org.mockito.Mockito.*;
++
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class DatabaseDriverTest {
++
++    @Mock
++    private URL stops;
++
++    @Mock
++    private URL lines;
++
++    @Mock
++    private Configuration configuration;
++
++    private BusLineReader busLineReader;
++
++    @BeforeEach
++    void setUp() throws MalformedURLException {
++        stops = new URL("https://www.cs.virginia.edu/~pm8fc/busses/stops.json");
++        lines = new URL("https://www.cs.virginia.edu/~pm8fc/busses/lines.json");
++        when(configuration.getBusLinesURL()).thenReturn(lines);
++        when(configuration.getBusStopsURL()).thenReturn(stops);
++        busLineReader = new BusLineReader(configuration);
++    }
++
++    @Test
++    void createTables() {
++
++    }
++
++    @Test
++    void addStops() {
++    }
++
++    @Test
++    void getAllStops() {
++    }
++
++    @Test
++    void getStopById() {
++    }
++
++    @Test
++    void getStopsByName() {
++    }
++
++    @Test
++    void addBusLines() {
++    }
++
++    @Test
++    void getBusLines() {
++    }
++
++    @Test
++    void getBusLinesById() {
++    }
++
++    @Test
++    void getBusLineByLongName() {
++    }
++
++    @Test
++    void getBusLineByShortName() {
++    }
++
++    @Test
++    void getBusLinesByStop() {
++    }
++
++    @Test
++    void getRouteForBusLine() {
++    }
++
++    @Test
++    void clearTables() {
++    }
++}
+\ No newline at end of file
+Index: src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java
+new file mode 100644
+--- /dev/null	(date 1713456086963)
++++ b/src/test/java/edu/virginia/sde/hw5/StopReaderTest.java	(date 1713456086963)
+@@ -0,0 +1,12 @@
++package edu.virginia.sde.hw5;
++
++import org.junit.jupiter.api.Test;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class StopReaderTest {
++
++    @Test
++    void getStops() {
++    }
++}
+\ No newline at end of file

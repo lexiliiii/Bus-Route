@@ -1,0 +1,44 @@
+Index: src/main/java/edu/virginia/sde/hw5/BusLineReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package edu.virginia.sde.hw5;\n\nimport org.json.JSONArray;\nimport org.json.JSONObject;\nimport org.json.JSONTokener;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.InputStreamReader;\nimport java.net.URL;\nimport java.nio.charset.StandardCharsets;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\npublic class BusLineReader {\n    private final URL busLinesApiUrl;\n    private final URL busStopsApiUrl;\n\n    /* You'll need this to get the Stop objects when building the Routes object */\n    private final StopReader stopReader;\n    /**\n     * Returns a list of BusLine objects. This is a \"deep\" list, meaning all the BusLine objects\n     * already have their Route objects fully populated with that line's Stops.\n     */\n\n    public BusLineReader(Configuration configuration) {\n        this.busStopsApiUrl = configuration.getBusStopsURL();\n        this.busLinesApiUrl = configuration.getBusLinesURL();\n        stopReader = new StopReader(configuration);\n    }\n\n    /**\n     * This method returns the BusLines from the API service, including their\n     * complete Routes.\n     */\n    public List<BusLine> getBusLines() {\n\n        List<BusLine> collection = new ArrayList<>();\n        List<Stop> allStops = stopReader.getStops();\n//        System.out.println(allStops);\n//        for(Stop s: allStops){\n//            System.out.println(s.getId());\n//        }\n        //TODO: implement\n        try(var inputStream = busLinesApiUrl.openStream();\n            var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);\n            var bufferedReader = new BufferedReader(inputStreamReader)) {\n            try(var inputStream1 = busStopsApiUrl.openStream();\n                var inputStreamReader1 = new InputStreamReader(inputStream1, StandardCharsets.UTF_8);\n                var bufferedReader1 = new BufferedReader(inputStreamReader1)) {\n\n                    var fileContents = bufferedReader.lines().collect(Collectors.joining(\"\\n\"));\n                    var fileContents1 = bufferedReader1.lines().collect(Collectors.joining(\"\\n\"));\n\n                    JSONObject json = new JSONObject(new JSONTokener(fileContents));\n                    JSONArray buslines = json.getJSONArray(\"lines\");\n                    JSONObject json_route = new JSONObject(new JSONTokener(fileContents1));\n                    JSONArray routes = json_route.getJSONArray(\"routes\");\n                    for (int i = 0; i < buslines.length(); i++) {\n                        JSONObject eachStop = buslines.getJSONObject(i);\n                        int id = eachStop.getInt(\"id\");\n                        boolean isActive = eachStop.getBoolean(\"is_active\");\n                        String longName = eachStop.getString(\"long_name\");\n                        String shortName = eachStop.getString(\"short_name\");\n\n                        JSONObject eachRoute = routes.getJSONObject(i);\n                        JSONArray stopList = eachRoute.getJSONArray(\"stops\");\n//                        System.out.println(stopList);\n//                        System.out.println(allStops);\n//\n                        Route tempRoute = new Route();\n\n                        for(int j = 0; j < stopList.length(); j ++){\n                            int temp_id = stopList.getInt(j);\n                            for(Stop s: allStops){\n                                if(s.getId() == temp_id){\n                                    tempRoute.add(s);\n                                }\n                            }\n//                            allStops.contains(temp_id)\n//                            System.out.println(temp_id);\n                        }\n//                        System.out.println(tempRoute);\n\n                    collection.add(new BusLine(id, isActive, longName, shortName, tempRoute));\n            }\n        }\n        } catch (IOException e) {\n            throw new RuntimeException(e);\n        }\n\n\n        return collection;\n        //TODO: implement\n    }\n\n//    public static void main(String[] args){\n////        Configuration con = new Configuration();\n////        con.parseJsonConfigFile();\n//        try {\n//            Configuration con = new Configuration();\n//            StopReader stop = new StopReader(con);\n//            BusLineReader bus = new BusLineReader(con);\n//\n//            List<BusLine> xx = bus.getBusLines();\n////            System.out.println(xx);\n////            System.out.println(stop);\n////            List<Stop> temp = stop.getStops();\n////            System.out.println(temp.size());\n//        } catch (Exception e) {\n//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.\n//        }\n//    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/edu/virginia/sde/hw5/BusLineReader.java b/src/main/java/edu/virginia/sde/hw5/BusLineReader.java
+--- a/src/main/java/edu/virginia/sde/hw5/BusLineReader.java	
++++ b/src/main/java/edu/virginia/sde/hw5/BusLineReader.java	
+@@ -95,21 +95,17 @@
+         //TODO: implement
+     }
+ 
+-//    public static void main(String[] args){
+-////        Configuration con = new Configuration();
+-////        con.parseJsonConfigFile();
+-//        try {
+-//            Configuration con = new Configuration();
++    public static void main(String[] args){
++        try {
++            Configuration con = new Configuration();
+ //            StopReader stop = new StopReader(con);
+-//            BusLineReader bus = new BusLineReader(con);
+-//
+-//            List<BusLine> xx = bus.getBusLines();
+-////            System.out.println(xx);
+-////            System.out.println(stop);
+-////            List<Stop> temp = stop.getStops();
+-////            System.out.println(temp.size());
+-//        } catch (Exception e) {
+-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+-//        }
+-//    }
++            BusLineReader bus = new BusLineReader(con);
++
++            List<BusLine> temp = bus.getBusLines();
++            System.out.println(temp);
++
++        } catch (Exception e) {
++            e.printStackTrace();
++        }
++    }
+ }
