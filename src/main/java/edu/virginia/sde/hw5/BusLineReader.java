@@ -83,8 +83,6 @@ public class BusLineReader {
 //                        System.out.println(tempRoute);
 
                                 collection.add(new BusLine(id_buslines, isActive, longName, shortName, tempRoute));
-//                                System.out.println(shortName);
-                                System.out.println("a " + new BusLine(id_buslines, isActive, longName, shortName, tempRoute));
                             }
 
                         }

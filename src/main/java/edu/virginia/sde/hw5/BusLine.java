@@ -86,6 +86,7 @@ public class BusLine {
                 "id=" + id +
                 ", isActive=" + isActive +
                 ", longName='" + longName + '\'' +
+                ", shortName='" + shortName + '\'' +
                 ", route=" + route +
                 '}';
     }
