@@ -79,22 +79,21 @@ public class BusLineReader {
         }
         return collection;
     }
+   /** public static void main(String[] args) {
+        try {
+            Configuration con = new Configuration();
+            StopReader stop = new StopReader(con);
+            BusLineReader bus = new BusLineReader(con);
 
-//    public static void main(String[] args){
-////        Configuration con = new Configuration();
-////        con.parseJsonConfigFile();
-//        try {
-//            Configuration con = new Configuration();
-//            StopReader stop = new StopReader(con);
-//            BusLineReader bus = new BusLineReader(con);
-//
-//            List<BusLine> xx = bus.getBusLines();
-//            System.out.println(xx);
-////            System.out.println(stop);
-////            List<Stop> temp = stop.getStops();
-////            System.out.println(temp.size());
-//        } catch (Exception e) {
-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
-//        }
-//    }
+            List<BusLine> xx = bus.getBusLines();
+            System.out.println(xx);
+            // System.out.println(stop);
+            // List<Stop> temp = stop.getStops();
+            // System.out.println(temp.size());
+        } catch (Exception e) {
+            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
+        }*/
+    }
+
+
 }
