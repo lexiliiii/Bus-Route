@@ -57,7 +57,6 @@ public class Configuration {
             busStopsURL = new URL(endpoints.getString("stops"));
             busLinesURL = new URL(endpoints.getString("lines"));
             databaseFilename = json.getString("database");
-            databaseFilename = json.getString("database");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,4 +74,5 @@ public class Configuration {
 //            e.printStackTrace();
 //        }
 //    }
+
 }
