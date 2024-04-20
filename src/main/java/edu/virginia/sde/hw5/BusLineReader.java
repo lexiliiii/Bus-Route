@@ -34,6 +34,8 @@ public class BusLineReader {
      * This method returns the BusLines from the API service, including their
      * complete Routes.
      */
+
+
     public List<BusLine> getBusLines() {
         List<BusLine> collection = new ArrayList<>();
         List<Stop> allStops = stopReader.getStops();
@@ -45,7 +47,7 @@ public class BusLineReader {
 
         var webServiceReader1 = new WebServiceReader(busStopsApiUrl);
         var json_route = webServiceReader1.getJSONObject();
-        JSONArray routes  = json_route.getJSONArray("routes");
+        JSONArray routes = json_route.getJSONArray("routes");
         for (int i = 0; i < buslines.length(); i++) {
             JSONObject eachStop = buslines.getJSONObject(i);
             int id_buslines = eachStop.getInt("id");
@@ -53,17 +55,17 @@ public class BusLineReader {
             String longName = eachStop.getString("long_name");
             String shortName = eachStop.getString("short_name");
 
-            for(int a = 0; a < routes.length(); a ++){
+            for (int a = 0; a < routes.length(); a++) {
                 JSONObject eachRoute = routes.getJSONObject(a);
                 JSONArray stopList = eachRoute.getJSONArray("stops");
                 int id_route = eachRoute.getInt("id");
 
-                if(id_route == id_buslines){
+                if (id_route == id_buslines) {
                     Route tempRoute = new Route();
-                    for(int j = 0; j < stopList.length(); j ++){
+                    for (int j = 0; j < stopList.length(); j++) {
                         int temp_id = stopList.getInt(j);
-                        for(Stop s: allStops){
-                            if(s.getId() == temp_id){
+                        for (Stop s : allStops) {
+                            if (s.getId() == temp_id) {
                                 tempRoute.add(s);
                             }
                         }
@@ -77,7 +79,11 @@ public class BusLineReader {
 
             }
         }
+
         return collection;
+    }
+
+
     }
    /** public static void main(String[] args) {
         try {
@@ -92,8 +98,7 @@ public class BusLineReader {
             // System.out.println(temp.size());
         } catch (Exception e) {
             e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
-        }*/
+        }
     }
-
-
+*/
 
