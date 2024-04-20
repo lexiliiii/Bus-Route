@@ -18,6 +18,7 @@ public class BusLineService {
         try {
             databaseDriver.connect();
             databaseDriver.addStops(stops);
+            databaseDriver.commit();//
             databaseDriver.disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -28,6 +29,7 @@ public class BusLineService {
         try {
             databaseDriver.connect();
             databaseDriver.addBusLines(busLines);
+            databaseDriver.commit();//
             databaseDriver.disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -96,13 +98,17 @@ public class BusLineService {
      */
     public Optional<BusLine> getRecommendedBusLine(Stop source, Stop destination) {
         List<Stop> stopList = getStops();
+        List<BusLine> busLineList = getBusLines();
+
+//        System.out.println(stopList);
+//        System.out.println(busLineList);
+
         if(!stopList.contains(source) || !stopList.contains(destination)){
             throw new IllegalArgumentException("Source or destination stop doesn't exist in the database");
         }
 
         double min = 1000000.0;
         BusLine minBus = new BusLine();
-        List<BusLine> busLineList = getBusLines();
 
         for(BusLine b : busLineList){
             Route tempRoute = getRoute(b);
@@ -130,7 +136,6 @@ public class BusLineService {
                         minBus = b;
                     }
                 }
-
                 else{
                     for(int a = end; a < start - 1; a ++){
                         distance += tempRoute.get(a).distanceTo(tempRoute.get(a+1));
@@ -149,4 +154,45 @@ public class BusLineService {
 
         return Optional.of(minBus);
     }
+
+//    public static void main(String[] args) throws SQLException {
+//        Configuration configuration = new Configuration();
+//        DatabaseDriver driver = new DatabaseDriver("bus_stops.sqlite");
+//        BusLineService busLineService = new BusLineService(driver);
+//
+//        driver.connect();
+//        driver.clearTables();
+//        driver.commit();
+//        driver.disconnect();
+//
+//        StopReader stopReader = new StopReader(configuration);
+//        BusLineReader busLineReader = new BusLineReader(configuration);
+//
+//        List<Stop> stops = stopReader.getStops();
+//        List<BusLine> busLines = busLineReader.getBusLines();
+//
+//        busLineService.addStops(stops);
+//        busLineService.addBusLines(busLines);
+//
+//        Stop source = new Stop(4267066,"Water St @ Omni Hotel",38.031599,-78.484879);
+//        Stop destination = new Stop(4267010,"Food Lion Hollymead",38.129341,-78.444257);
+//
+//        System.out.println("Correct answer: " + busLines.get(0));
+//        System.out.println("Actual answer: " + busLineService.getRecommendedBusLine(source, destination));
+//
+////        System.out.println(busLineService.getClosestStop(38.033832,-78.517765));
+//
+////        List<BusLine> busLineList = busLineService.getBusLines();
+////        for (BusLine busLine : busLines) {
+////            System.out.println(busLine);
+////        }
+////        System.out.println(stops.contains(source));
+////        System.out.println(stops.contains(destination));
+//
+////        System.out.println("----------------------------------");
+////        System.out.println("----------------------------------");
+////        System.out.println("----------------------------------");
+////        System.out.println();
+//
+//    }
 }

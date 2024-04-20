@@ -170,7 +170,7 @@ public class DatabaseDriver {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, stopId);
             try (ResultSet rs = statement.executeQuery()) {
-                if (rs != null) {
+                if (rs.next()) {
                     String stopName = rs.getString("StopName");
                     double latitude = rs.getDouble("Latitude");
                     double longitude = rs.getDouble("Longitude");
@@ -200,7 +200,6 @@ public class DatabaseDriver {
 
         try (Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery(sql)) {
-
             while (rs.next()) {
                 String stopName = rs.getString("StopName");
                 if(stopName.toLowerCase().contains(subString.toLowerCase())){
@@ -224,7 +223,7 @@ public class DatabaseDriver {
      * the method was called. This could happen if, for example, a BusLine contains a Stop that is not in the database.
      */
 
-    public void addBusLines(List<BusLine> busLines) throws SQLException {//////////
+    public void addBusLines(List<BusLine> busLines) throws SQLException {
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
@@ -303,19 +302,42 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
+        Route route = new Route();
+        String sql1 = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
+                "FROM Routes r " +
+                "JOIN Stops s ON r.StopID = s.ID " +
+                "WHERE r.BusLineID = ? " +
+                "ORDER BY r.RouteOrder;";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+            pstmt.setInt(1, busLineId);
+
+            try (ResultSet rs1 = pstmt.executeQuery()) {
+                while (rs1.next()) {
+                    int id = rs1.getInt("ID");
+                    String name = rs1.getString("StopName");
+                    double latitude = rs1.getDouble("Latitude");
+                    double longitude = rs1.getDouble("Longitude");
+                    route.add(new Stop(id, name, latitude, longitude));
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error getting route for BusLine: " + e.getMessage());
+        }
+
         String sql = "SELECT * FROM BusLines WHERE ID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, busLineId);
             try (ResultSet rs = statement.executeQuery()) {
-                if (rs != null) {
+                if (rs.next()) {
                     boolean isActive = rs.getBoolean("IsActive");
                     String longName = rs.getString("LongName");
                     String shortName = rs.getString("ShortName");
 
                     BusLine busLine = new BusLine(busLineId, isActive, longName, shortName);
 
-                    Route route = getRouteForBusLine(busLine);
+//                    Route route = getRouteForBusLine(busLine);
                     busLine.setRoute(route);
 
                     return Optional.of(busLine);
@@ -335,13 +357,12 @@ public class DatabaseDriver {
         if (connection.isClosed()) {
             throw new IllegalStateException("Connection is closed right now.");
         }
-
         String sql = "SELECT * FROM BusLines WHERE LOWER(LongName) = LOWER(?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, longName);
             try (ResultSet rs = statement.executeQuery()) {
-                if (rs != null) {
+                if (rs.next()) {
                     int id = rs.getInt("ID");
                     boolean isActive = rs.getBoolean("IsActive");
                     String shortName = rs.getString("ShortName");
@@ -349,16 +370,35 @@ public class DatabaseDriver {
 
                     BusLine busLine = new BusLine(id, isActive, originalLongName, shortName);
 
-                    Route route = getRouteForBusLine(busLine);
-                    busLine.setRoute(route);
+                    Route route = new Route();
+                    String sql1 = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
+                            "FROM Routes r " +
+                            "JOIN Stops s ON r.StopID = s.ID " +
+                            "WHERE r.BusLineID = ? " +
+                            "ORDER BY r.RouteOrder;";
+                    try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+                        pstmt.setInt(1, id);
 
+                        try (ResultSet rs1 = pstmt.executeQuery()) {
+                            while (rs1.next()) {
+                                int stopId = rs1.getInt("ID");
+                                String name = rs1.getString("StopName");
+                                double latitude = rs1.getDouble("Latitude");
+                                double longitude = rs1.getDouble("Longitude");
+                                route.add(new Stop(stopId, name, latitude, longitude));
+                            }
+                        }
+                    } catch (SQLException e) {
+                        throw new SQLException("Error getting route for BusLine: " + e.getMessage());
+                    }
+                    busLine.setRoute(route);
                     return Optional.of(busLine);
                 } else {
                     return Optional.empty();
                 }
             }
         } catch (SQLException e) {
-            throw new SQLException("Error reading from Stops table: " + e.getMessage());
+            throw new SQLException("Error reading from BusLines table: " + e.getMessage());
         }
     }
 
@@ -371,28 +411,46 @@ public class DatabaseDriver {
         }
 
         String sql = "SELECT * FROM BusLines WHERE LOWER(ShortName) = LOWER(?)";
-
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, shortName.toUpperCase());
+            statement.setString(1, shortName);
             try (ResultSet rs = statement.executeQuery()) {
-                if (rs != null) {
+                if (rs.next()) {
                     int id = rs.getInt("ID");
                     boolean isActive = rs.getBoolean("IsActive");
                     String longName = rs.getString("LongName");
                     String originalShortName = rs.getString("ShortName");
 
+                    Route route = new Route();
+                    String sql1 = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
+                            "FROM Routes r " +
+                            "JOIN Stops s ON r.StopID = s.ID " +
+                            "WHERE r.BusLineID = ? " +
+                            "ORDER BY r.RouteOrder;";
+                    try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+                        pstmt.setInt(1, id);
+                        try (ResultSet rs1 = pstmt.executeQuery()) {
+                            while (rs1.next()) {
+                                int stopId = rs1.getInt("ID");
+                                String name = rs1.getString("StopName");
+                                double latitude = rs1.getDouble("Latitude");
+                                double longitude = rs1.getDouble("Longitude");
+                                route.add(new Stop(stopId, name, latitude, longitude));
+                            }
+                        }
+                    } catch (SQLException e) {
+                        throw new SQLException("Error getting route for BusLine: " + e.getMessage());
+                    }
+
+                    // Create the bus line object and set its route
                     BusLine busLine = new BusLine(id, isActive, longName, originalShortName);
-
-                    Route route = getRouteForBusLine(busLine);
                     busLine.setRoute(route);
-
                     return Optional.of(busLine);
                 } else {
                     return Optional.empty();
                 }
             }
         } catch (SQLException e) {
-            throw new SQLException("Error reading from Stops table: " + e.getMessage());
+            throw new SQLException("Error reading from BusLines table: " + e.getMessage());
         }
     }
 
@@ -449,6 +507,15 @@ public class DatabaseDriver {
             throw new IllegalStateException("Connection is closed right now.");
         }
 
+        String checkBusLineSql = "SELECT COUNT(*) AS LineCount FROM BusLines WHERE ID = ?";
+        try (PreparedStatement checkStmt = connection.prepareStatement(checkBusLineSql)) {
+            checkStmt.setInt(1, busLine.getId());
+            ResultSet rsCheck = checkStmt.executeQuery();
+            if (rsCheck.next() && rsCheck.getInt("LineCount") == 0) {
+                throw new NoSuchElementException("This busLine is not in the database.");
+            }
+        }
+
         List<Stop> stops = new ArrayList<>();
         String sql = "SELECT s.ID, s.StopName, s.Latitude, s.Longitude " +
                 "FROM Routes r " +
@@ -460,9 +527,6 @@ public class DatabaseDriver {
             pstmt.setInt(1, busLine.getId());
 
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (!rs.isBeforeFirst()) {
-                    throw new NoSuchElementException("This busline is not in the database");
-                }
                 while (rs.next()) {
                     int id = rs.getInt("ID");
                     String name = rs.getString("StopName");
