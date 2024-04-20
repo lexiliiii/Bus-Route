@@ -57,23 +57,8 @@ public class Configuration {
             busStopsURL = new URL(endpoints.getString("stops"));
             busLinesURL = new URL(endpoints.getString("lines"));
             databaseFilename = json.getString("database");
-//            System.out.println(busStopsURL);
-            //TODO: Parse config.json to set the three fields
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-//
-//    public static void main(String[] args){
-////        Configuration con = new Configuration();
-////        con.parseJsonConfigFile();
-//        try {
-//            Configuration con = new Configuration();
-//            System.out.println("Bus Stops URL: " + con.getBusStopsURL());
-//            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
-//            System.out.println("Database Filename: " + con.getDatabaseFilename());
-//        } catch (Exception e) {
-//            e.printStackTrace(); // This will print the stack trace if any exceptions are caught.
-//        }
-//    }
 }

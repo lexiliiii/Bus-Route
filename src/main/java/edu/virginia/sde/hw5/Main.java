@@ -14,15 +14,14 @@ public class Main {
         String databaseName = "bus_stops.sqlite";
         DatabaseDriver driver = new DatabaseDriver(databaseName);
 
-//        System.out.println(con.getBusLinesURL());
-
         try {
             driver.connect();
+
+            if(driver != null){
+                driver.clearTables();
+            }
+
             driver.createTables();
-            driver.clearTables();
-
-
-
 
             BusLineReader busReader = new BusLineReader(con);
             List<BusLine> busLines = busReader.getBusLines();
@@ -33,19 +32,36 @@ public class Main {
             driver.addStops(stops);
             driver.addBusLines(busLines);
 
-//            List<Route> routes = new ArrayList<>();
-//            for(int i = 0; i < busLines.size(); i ++){
-//                routes.add(busLines.get(i).getRoute());
-//            }
+//            BusLine temp = busLines.get(0);
+//            System.out.println(temp);
+//            System.out.println();
+//            System.out.println(driver.getBusLineByShortName("29n"));
+//            System.out.println();
+//            System.out.println(driver.getBusLineByShortName("29"));
+
+//            System.out.println(driver.getBusLinesById(4013468));
+//            System.out.println();
+//            System.out.println(driver.getBusLinesById(403468));
+
+//            System.out.println(driver.getBusLineByLongName("29 North connect"));
+//            System.out.println();
+//            System.out.println(driver.getBusLineByLongName("29 Norteh CONNECT"));
+
+//            BusLine temp = busLines.get(0);
+//            System.out.println(temp);
+//            Route temp1 = driver.getRouteForBusLine(temp);
+//            System.out.println(temp1);
 
 //            System.out.println("Number of stops: " + stops.size());
 //            for (Stop stop : stops) {
-//                System.out.println("Processing stop ID: " + stop.getId());
+//                System.out.println(stop);
 //            }
+//            System.out.println(driver.getStopById(4267060));
+//            System.out.println(driver.getRouteForBusLine());
 //
 //            System.out.println("Number of bus lines: " + busLines.size());
 //            for (BusLine busLine : busLines) {
-//                System.out.println("Processing bus line ID: " + busLine.getId());
+//                System.out.println(busLine);
 //            }
 
             driver.commit();
@@ -65,54 +81,5 @@ public class Main {
                 System.out.println("Error disconnecting from the database: " + e.getMessage());
             }
         }
-
-        /*testGetRecommendedBusLine_Stopexits_hasBusline1*/
-        Stop startStop = new Stop(4235108, "Alderman Rd @ O-Hill Dining Hall", 38.033937, -78.51424);
-        Stop endStop = new Stop(4235106, "Alderman Rd @ Gooch/Dillard (Southbound)", 38.029305, -78.516414);
-        BusLineService busLineService = new BusLineService(driver);
-        Optional<BusLine> actualRecommendedBusLine = busLineService.getRecommendedBusLine(startStop, endStop);
-        BusLine recommendedBusLine1 = new BusLine(4013976, true, "Orange Line", "Orange");
-        BusLine recommendedBusLine12 = new BusLine(4013970, true, "Green Line", "GRN");
-        boolean result1=actualRecommendedBusLine.equals(recommendedBusLine12);
-        System.out.println(actualRecommendedBusLine);
-        System.out.println(result1);
-        System.out.println("______________________________");
-        /*testGetRecommendedBusLine_StopDoesNotExist*/
-        Stop startStop2 = new Stop(00000, "Texas", 38.033937, -78.51424);
-        Stop endStop2 = new Stop(11111, "Maryland", 38.029305, -78.516414);
-        try {
-            busLineService.getRecommendedBusLine(startStop2, endStop2);
-            System.out.println("No IllegalArgumentException was thrown. Test failed.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("IllegalArgumentException was thrown. Test passed.");
-        }
-        System.out.println("______________________________");
-        /*testGetRecommendedBusLine_Stopexits_hasBusline2*/
-        Stop startStop3 = new Stop(4260150, "McCormick Rd @ Garrett Hall", 38.0342971845614, -78.5060574809856);
-        Stop endStop3 = new Stop(4258644, "McCormick Rd @ Alderman Library", 38.035546, -78.505295);
-        BusLine recommendedBusLine3 = new BusLine(4013970, true, "Green Line", "GRN");
-        //there are two buslines 4013972, 4013970)4013970 is shorter
-        Optional<BusLine> actualRecommendedBusLine3 = busLineService.getRecommendedBusLine(startStop3, endStop3);
-        boolean result3=actualRecommendedBusLine3.equals(recommendedBusLine3);
-        System.out.println(actualRecommendedBusLine3);
-        System.out.println(recommendedBusLine3);
-        System.out.println(result3);
-        System.out.println("______________________________");
-
-        /*testGetClosestStop*/
-        double latitude = 38.049;
-        double longitude = -78.5053;
-        Stop result = busLineService.getClosestStop(latitude, longitude);
-        Stop true_result = new Stop(4235116, "Arlington Blvd @ Barracks Rd Shopping Ctr", 38.048796, -78.505219);
-        boolean result4=true_result.equals(result);
-        System.out.println(result4);
-
-
-
-
-
-
     }
-
-
 }

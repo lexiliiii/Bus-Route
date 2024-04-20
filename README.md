@@ -2,33 +2,33 @@
 # Homework 5 - Data Layer
 
 ## Authors
-1) Name, netid, [GitHub profile name]
-2) Name, netid, [GitHub profile name]
-3) Name, netid, [GitHub profile name]
+1) Enhui Li, cmk8wq, [lexiliiii]
+2) Casey Shi, nqs9yv, [CaseyyyyS]
+3) Ziqian Zhao, uja2mg, [Sherryzhao23]
 
 
 ## Contributions
 
 List the primary contributions of each author. It is recommended to update this with your contributions after each coding session.:
 
-### [Author 1 - replace this with their name]
+### [Enhui Li]
 
-* Author 1 contributions
-* as a bulleted list
-* each line starts with an asterisk and a space
+* Implemented PART_3 and PART_4 
+* Implemented PART_1 and PART_2 and PART_3 
+* Wrote corresponding testings for PART_2 and PART_3
 
-### [Author 2 - replace this with their name]
+### [Casey Shi]
 
-* Author 2 contributions
-* as a bulleted list
-* each line starts with an asterisk and a space
+* Implemented PART_1 
+* Implemented PART_5 
+* Wrote corresponding testings for PART_5
 
-### [Author 3 - replace this with their name]
+### [Ziqian Zhao]
 
-* Author 3 contributions
-* as a bulleted list
-* each line starts with an asterisk and a space
+* Implemented PART_2
+* Helped check PART_4
+* Wrote corresponding testings for PART_5
 
 ## Issues
 
-List any known issues (bugs, incorrect behavior, etc.) at the time of submission.
+No issues are being found when submitted.
