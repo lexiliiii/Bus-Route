@@ -25,17 +25,14 @@ public class StopReader {
      * Read all the stops from the "stops" json URL from Configuration Reader
      * @return List of stops
      */
-    public List<Stop> getStops() {//TODO: implement
+    public List<Stop> getStops() {
         List<Stop> collection = new ArrayList<>();
+            var webServiceReader = new WebServiceReader(busStopsApiUrl);
+            var json = webServiceReader.getJSONObject();
 
-        try(var inputStream = busStopsApiUrl.openStream();
-            var inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-            var bufferedReader = new BufferedReader(inputStreamReader)) {
-            var fileContents = bufferedReader.lines().collect(Collectors.joining("\n"));
-
-            JSONObject json = new JSONObject(new JSONTokener(fileContents));
             JSONArray stops = json.getJSONArray("stops");
-            for(int i = 0; i < stops.length(); i ++){
+
+            for (int i = 0; i < stops.length(); i++) {
                 JSONObject eachStop = stops.getJSONObject(i);
 
                 int id = eachStop.getInt("id");
@@ -46,9 +43,7 @@ public class StopReader {
 
                 collection.add(new Stop(id, name, latitude, longitude));
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         return collection;
     }
 
