@@ -61,18 +61,4 @@ public class Configuration {
             throw new RuntimeException(e);
         }
     }
-
-//    public static void main(String[] args){
-////        Configuration con = new Configuration();
-////        con.parseJsonConfigFile();
-//        try {
-//            Configuration con = new Configuration();
-//            System.out.println("Bus Stops URL: " + con.getBusStopsURL());
-//            System.out.println("Bus Lines URL: " + con.getBusLinesURL());
-//            System.out.println("Database Filename: " + con.getDatabaseFilename());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 }

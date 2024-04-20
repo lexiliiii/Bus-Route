@@ -32,15 +32,32 @@ public class Main {
             driver.addStops(stops);
             driver.addBusLines(busLines);
 
-//            List<Route> routes = new ArrayList<>();
-//            for(int i = 0; i < busLines.size(); i ++){
-//                routes.add(busLines.get(i).getRoute());
-//            }
-//
+//            BusLine temp = busLines.get(0);
+//            System.out.println(temp);
+//            System.out.println();
+//            System.out.println(driver.getBusLineByShortName("29n"));
+//            System.out.println();
+//            System.out.println(driver.getBusLineByShortName("29"));
+
+//            System.out.println(driver.getBusLinesById(4013468));
+//            System.out.println();
+//            System.out.println(driver.getBusLinesById(403468));
+
+//            System.out.println(driver.getBusLineByLongName("29 North connect"));
+//            System.out.println();
+//            System.out.println(driver.getBusLineByLongName("29 Norteh CONNECT"));
+
+//            BusLine temp = busLines.get(0);
+//            System.out.println(temp);
+//            Route temp1 = driver.getRouteForBusLine(temp);
+//            System.out.println(temp1);
+
 //            System.out.println("Number of stops: " + stops.size());
 //            for (Stop stop : stops) {
-//                System.out.println("Processing stop ID: " + stop.getId());
+//                System.out.println(stop);
 //            }
+//            System.out.println(driver.getStopById(4267060));
+//            System.out.println(driver.getRouteForBusLine());
 //
 //            System.out.println("Number of bus lines: " + busLines.size());
 //            for (BusLine busLine : busLines) {
