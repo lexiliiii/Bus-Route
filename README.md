@@ -31,4 +31,5 @@ List the primary contributions of each author. It is recommended to update this 
 
 ## Issues
 
+The given code of BusLineService(addStops/addBusLines) has issues, we add commit to it. Also, in the route class, the getRouteDistance function failed to count the overall distance. A bus goes in a loop, it does not count the distance when the last stop to the first stop. We added some codes to it.
 No issues are being found when submitted.
