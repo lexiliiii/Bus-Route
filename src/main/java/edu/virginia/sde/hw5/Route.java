@@ -49,7 +49,7 @@ public class Route implements Iterable<Stop> {
             double segmentDistance = segmentStart.distanceTo(segmentEnd);
             totalDistance += segmentDistance;
         }
-        totalDistance += get(0).distanceTo(get(size()));
+        totalDistance += get(0).distanceTo(get(size() - 1));
         return totalDistance;
     }
 
